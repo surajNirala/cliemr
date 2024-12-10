@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_REGISTRY_CREDENTIALS = 'devflaviant_dockerhub_credentials'
+        IMAGE_NAME = 'cliemr'
+        IMAGE_TAG = 'latest-cliemr' 
+        DOCKER_USERNAME = 'snirala1995'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/dev'], [name: '*/staging'], [name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'git@github.com:stellardevteam/info.git']]])
+            }
+        }
+        
+        stage('Build Docker Image') {
+            when {
+                expression { 
+                    return env.BRANCH_NAME == 'main'
+                }
+            }
+            steps {
+                script {
+                    def buildNumber = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
+                    writeFile file: 'build_number.txt', text: buildNumber
+                    docker.build("${IMAGE_NAME}:${buildNumber}", ".")
+                }
+            }
+        }
+		
+        stage('Pushing to Docker Hub') {
+            when {
+                expression { 
+                    return env.BRANCH_NAME == 'main'
+                }
+            }
+            steps {
+                script {
+                    def buildNumber = readFile 'build_number.txt'
+                    def taggedImage = "${DOCKER_USERNAME}/${IMAGE_NAME}:${buildNumber}"
+                    // sh "docker tag ${IMAGE_NAME}:${buildNumber} ${taggedImage}"
+                    sh "docker push ${taggedImage}"
+                }
+            }
+        }
+       
+      stage('Deploy to GCP') {
+        when {
+          expression { 
+            return env.BRANCH_NAME == 'main'
+        }
+    }
+    steps {
+        script {
+            // Get build number
+            def buildNumber = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
+            println "Build Number: ${buildNumber}" // Print the build number for verification
+            
+            // Replace placeholder with build number in deploy.sh
+            sh "sed -i 's/BUILD_NUMBER_PLACEHOLDER/${buildNumber}/' deploy.sh"
+            
+            // Copy deploy.sh to the deployment server
+            sh "scp -i /var/lib/jenkins/.ssh/id_rsa deploy.sh root@139.59.79.193:/root/script_cliemr_container_deployment/deploy.sh"
+            
+            // Execute deploy.sh on the deployment server with buildNumber as argument
+            sh "ssh -i /var/lib/jenkins/.ssh/id_rsa root@139.59.79.193 'chmod +x /root/script_cliemr_container_deployment/deploy.sh && /root/script_cliemr_container_deployment/deploy.sh ${buildNumber}'"
+        }
+    }
+}
+
+    }
+}
