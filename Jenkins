@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_REGISTRY_CREDENTIALS = 'devflaviant_dockerhub_credentials'
+        DOCKER_REGISTRY_CREDENTIALS = 'credentials-snirala-dockerhub'
         IMAGE_NAME = 'cliemr'
         IMAGE_TAG = 'latest-cliemr' 
         DOCKER_USERNAME = 'snirala1995'
@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev'], [name: '*/staging'], [name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'git@github.com:stellardevteam/info.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/dev'], [name: '*/staging'], [name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'git@github.com:surajNirala/cliemr.git']]])
             }
         }
         
@@ -62,10 +62,11 @@ pipeline {
             sh "sed -i 's/BUILD_NUMBER_PLACEHOLDER/${buildNumber}/' deploy.sh"
             
             // Copy deploy.sh to the deployment server
-            sh "scp -i /var/lib/jenkins/.ssh/id_rsa deploy.sh root@139.59.79.193:/root/script_cliemr_container_deployment/deploy.sh"
+            //ssh -i /home/srj/.ssh/id_rsa srj@34.131.166.50
+            sh "scp -i /home/srj/.ssh/id_rsa  deploy.sh srj@34.131.166.50:/home/srj/cliemr/script_cliemr_container_deployment/deploy.sh"
             
             // Execute deploy.sh on the deployment server with buildNumber as argument
-            sh "ssh -i /var/lib/jenkins/.ssh/id_rsa root@139.59.79.193 'chmod +x /root/script_cliemr_container_deployment/deploy.sh && /root/script_cliemr_container_deployment/deploy.sh ${buildNumber}'"
+            sh "ssh -i /home/srj/.ssh/id_rsa  srj@34.131.166.50 'chmod +x /home/srj/cliemr/script_cliemr_container_deployment/deploy.sh && /home/srj/cliemr/script_cliemr_container_deployment/deploy.sh ${buildNumber}'"
         }
     }
 }
