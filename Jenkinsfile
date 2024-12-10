@@ -40,7 +40,9 @@ pipeline {
                 script {
                     def buildNumber = readFile 'build_number.txt'
                     def taggedImage = "${DOCKER_USERNAME}/${IMAGE_NAME}:${buildNumber}"
-                    sh "docker tag ${IMAGE_NAME}:${buildNumber} ${taggedImage}"
+                    println "Tagged Image: ${taggedImage}"
+                    sh "echo Build Number: ${buildNumber}"
+                    // sh "docker tag ${IMAGE_NAME}:${buildNumber} ${taggedImage}"
                     sh "docker push ${taggedImage}"
                 }
             }
