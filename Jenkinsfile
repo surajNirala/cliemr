@@ -47,6 +47,11 @@ pipeline {
                         println "Tagged Image: ${taggedImage}"
                         
                         sh "docker tag ${IMAGE_NAME}:${buildNumber} ${taggedImage}"
+                        echo "Pushing Docker image to DockerHub."
+                        docker.withRegistry('https://registry.hub.docker.com', CREDENTIAL_SNIRALA_DOCKERHUB) {
+                            docker.image("${taggedImage}").push()
+                        }
+                        echo "Docker image pushed to DockerHub successfully."
                         // sh "docker push ${taggedImage}"
                         
                     } catch (Exception e) {
@@ -57,21 +62,21 @@ pipeline {
             }
         }
 
-         stage('Push Docker Image To Docker Hub') {
-            steps {
-                script {
-                    try {
-                        echo "Pushing Docker image to DockerHub."
-                        docker.withRegistry('https://registry.hub.docker.com', CREDENTIAL_SNIRALA_DOCKERHUB) {
-                            docker.image("${DOCKER_USERNAME}/${IMAGE_NAME}:${buildNumber}").push()
-                        }
-                        echo "Docker image pushed to DockerHub successfully."
-                    } catch (Exception e) {
-                        echo "Failed to push Docker image: ${e.message}"
-                    }
-                }
-            }
-        }
+        // stage('Push Docker Image To Docker Hub') {
+        //     steps {
+        //         script {
+        //             try {
+        //                 echo "Pushing Docker image to DockerHub."
+        //                 docker.withRegistry('https://registry.hub.docker.com', CREDENTIAL_SNIRALA_DOCKERHUB) {
+        //                     docker.image("${DOCKER_USERNAME}/${IMAGE_NAME}:${buildNumber}").push()
+        //                 }
+        //                 echo "Docker image pushed to DockerHub successfully."
+        //             } catch (Exception e) {
+        //                 echo "Failed to push Docker image: ${e.message}"
+        //             }
+        //         }
+        //     }
+        // }
        
       stage('Deploy to GCP') {
         when {
