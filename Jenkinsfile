@@ -1,107 +1,130 @@
 pipeline {
-    agent any
-    
+    agent any 
     environment {
-        DOCKER_REGISTRY_CREDENTIALS = 'credentials-snirala-dockerhub'
-        IMAGE_NAME = 'cliemr'
-        IMAGE_TAG = 'latest-cliemr' 
-        DOCKER_USERNAME = 'snirala1995'
+        DOCKER_HUB_REPO = 'snirala1995/cliemr'
+        DOCKER_IMAGE_TAG = "${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}"
+        CONTAINER_NAME = 'cliemr' // Name for your Docker container
+        CONTAINER_PORT = '80' // Port inside the Docker container
         CREDENTIAL_SNIRALA_DOCKERHUB = 'credentials-snirala-dockerhub'
+        CREDENTIALS_GOLANG_SERVER = 'credentials-golang-server'
+        JENKINS_SERVER = '35.200.176.111'
+        GOLANG_SERVER = '34.131.166.50'
+        ENV_FINAL_LIVE = '/home/srj/cliemr/env/.env'
+        CUSTOM_VOLUME_DATA = '/home/srj/cliemr/custom_data:/var/www/html/public/custom_data'
     }
-    
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['Dev', 'Live'], description: 'Select The Environment')
+    }
     stages {
-        stage('Checkout') {
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev'], [name: '*/staging'], [name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'git@github.com:surajNirala/cliemr.git']]])
-            }
-        }
-        
-        stage('Build Docker Image') {
-            when {
-                expression { 
-                    return env.BRANCH_NAME == 'main'
-                }
-            }
+        stage('Set Ports') {
             steps {
                 script {
-                    def buildNumber = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
-                    writeFile file: 'build_number.txt', text: buildNumber
-                    docker.build("${IMAGE_NAME}:${buildNumber}", ".")
-                }
-            }
-        }
-		
-        stage('Image Tagged') {
-            when {
-                expression { 
-                    return env.BRANCH_NAME == 'main'
-                }
-            }
-            steps {
-                script {
-                    try {
-                        def buildNumber = readFile 'build_number.txt'.trim()
-                        def taggedImage = "${DOCKER_USERNAME}/${IMAGE_NAME}:${buildNumber}"
-                        
-                        println "Build Number: ${buildNumber}"
-                        println "Tagged Image: ${taggedImage}"
-                        
-                        sh "docker tag ${IMAGE_NAME}:${buildNumber} ${taggedImage}"
-                        echo "Pushing Docker image to DockerHub."
-                        docker.withRegistry('https://registry.hub.docker.com', CREDENTIAL_SNIRALA_DOCKERHUB) {
-                            docker.image("${taggedImage}").push()
-                        }
-                        echo "Docker image pushed to DockerHub successfully."
-                        // sh "docker push ${taggedImage}"
-                        
-                    } catch (Exception e) {
-                        println "Error occurred: ${e.getMessage()}"
-                        error "Failed to tag or push Docker image."
+                    // Set ports based on the selected environment
+                    if (params.ENVIRONMENT == 'Dev') {
+                        env.HOST_PORT = '9001'
+                        env.SERVER_IP = "http://${GOLANG_SERVER}:${env.HOST_PORT}"
+                    } else if (params.ENVIRONMENT == 'Live') {
+                        env.HOST_PORT = '9000'
+                        env.SERVER_IP = "http://${GOLANG_SERVER}:${env.HOST_PORT}"
                     }
                 }
             }
         }
 
-        // stage('Push Docker Image To Docker Hub') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 echo "Pushing Docker image to DockerHub."
-        //                 docker.withRegistry('https://registry.hub.docker.com', CREDENTIAL_SNIRALA_DOCKERHUB) {
-        //                     docker.image("${DOCKER_USERNAME}/${IMAGE_NAME}:${buildNumber}").push()
-        //                 }
-        //                 echo "Docker image pushed to DockerHub successfully."
-        //             } catch (Exception e) {
-        //                 echo "Failed to push Docker image: ${e.message}"
-        //             }
-        //         }
-        //     }
-        // }
-       
-      stage('Deploy to GCP') {
-        when {
-          expression { 
-            return env.BRANCH_NAME == 'main'
+        stage('Check Existing Container') {
+            steps {
+                script {
+                    echo "Checking if the container already exists"
+                    def existingContainer = sh(script: "docker ps -aqf name=${CONTAINER_NAME}-${env.HOST_PORT}", returnStdout: true).trim()
+                    if (existingContainer) {
+                        echo "Stopping and removing the existing container: ${CONTAINER_NAME}-${env.HOST_PORT}"
+                        sh "docker rm -f ${CONTAINER_NAME}-${env.HOST_PORT}"
+                    }
+                }
+            }
         }
-    }
-    steps {
-        script {
-            // Get build number
-            def buildNumber = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
-            println "Build Number: ${buildNumber}" // Print the build number for verification
-            
-            // Replace placeholder with build number in deploy.sh
-            sh "sed -i 's/BUILD_NUMBER_PLACEHOLDER/${buildNumber}/' deploy.sh"
-            
-            // Copy deploy.sh to the deployment server
-            //ssh -i /home/srj/.ssh/id_rsa srj@34.131.166.50
-            sh "scp -i /home/srj/.ssh/id_rsa  deploy.sh srj@34.131.166.50:/home/srj/cliemr/script_cliemr_container_deployment/deploy.sh"
-            
-            // Execute deploy.sh on the deployment server with buildNumber as argument
-            sh "ssh -i /home/srj/.ssh/id_rsa  srj@34.131.166.50 'chmod +x /home/srj/cliemr/script_cliemr_container_deployment/deploy.sh && /home/srj/cliemr/script_cliemr_container_deployment/deploy.sh ${buildNumber}'"
-        }
-    }
-}
 
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building the Docker image"
+                    docker.build(DOCKER_IMAGE_TAG)
+                    echo "Docker image built successfully."
+                }
+            }
+        }
+
+        stage('Push Docker Image To Docker Hub') {
+            steps {
+                script {
+                    try {
+                        echo "Pushing Docker image to DockerHub."
+                        docker.withRegistry('https://registry.hub.docker.com', CREDENTIAL_SNIRALA_DOCKERHUB) {
+                            docker.image(DOCKER_IMAGE_TAG).push()
+                        }
+                        echo "Docker image pushed to DockerHub successfully."
+                    } catch (Exception e) {
+                        echo "Failed to push Docker image: ${e.message}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    if (params.ENVIRONMENT == 'Dev' || params.ENVIRONMENT == 'Live') {
+                        echo "Deploying to ================= SRJ-SERVER ============== (${GOLANG_SERVER})"
+                        sshagent([CREDENTIALS_GOLANG_SERVER]) {
+                            echo "Deploying to ${GOLANG_SERVER} on port ${HOST_PORT} with image ${DOCKER_IMAGE_TAG}"
+                            withCredentials([usernamePassword(credentialsId: CREDENTIAL_SNIRALA_DOCKERHUB, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){
+                            sh """
+                                echo "Connecting to ${GOLANG_SERVER}..."
+                                ssh -o StrictHostKeyChecking=no srj@${GOLANG_SERVER} <<EOF
+                                echo "Remote server connected successfully!"
+
+                                echo "Logging into DockerHub"
+                                echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+                                echo "Pulling Docker image from DockerHub: ${DOCKER_IMAGE_TAG}"
+                                docker pull ${DOCKER_IMAGE_TAG}
+
+                                echo "Stopping and removing any existing container"
+                                docker rm -f ${CONTAINER_NAME}-${HOST_PORT} || true
+
+                                echo "Running the Docker container"
+
+                                docker run -d --init -p ${HOST_PORT}:${CONTAINER_PORT} -v ${ENV_FINAL_LIVE} -v ${CUSTOM_VOLUME_DATA} --name ${CONTAINER_NAME}-${HOST_PORT} ${DOCKER_IMAGE_TAG}
+                                
+                                echo "Docker image ${DOCKER_IMAGE_TAG} run successfully."
+                                exit
+                            """
+                            // docker run --env-file ${ENV_FINAL_LIVE} -d --init -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME}-${HOST_PORT} ${DOCKER_IMAGE_TAG}
+                            }
+                        }
+                    } else {
+                        echo "Deploying image in non-Dev environment"
+                        sh "docker run -d --init -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME}-${HOST_PORT} ${DOCKER_IMAGE_TAG}"
+                        echo "Docker image ${DOCKER_IMAGE_TAG} run successfully."
+                    }   
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                echo "Docker image ${DOCKER_IMAGE_TAG} successfully pushed to Docker Hub."
+                echo "Container running on port: ${HOST_PORT}"
+                echo "Pipeline completed successfully."
+                echo "Click the following link to check the website live: ${env.SERVER_IP}"
+            }
+        }
+        failure {
+            script {
+                echo "Pipeline failed. Check logs for details."
+            }
+        }
     }
 }
