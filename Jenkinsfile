@@ -94,7 +94,8 @@ pipeline {
 
                                 echo "Running the Docker container"
 
-                                docker run -d --init -p ${HOST_PORT}:${CONTAINER_PORT} -v ${ENV_FINAL_LIVE} -v ${CUSTOM_VOLUME_DATA} --name ${CONTAINER_NAME}-${HOST_PORT} ${DOCKER_IMAGE_TAG}
+                                # docker run -d --init -p ${HOST_PORT}:${CONTAINER_PORT} -v ${ENV_FINAL_LIVE} -v ${CUSTOM_VOLUME_DATA} --name ${CONTAINER_NAME}-${HOST_PORT} ${DOCKER_IMAGE_TAG}
+                                docker run -d --init -p ${HOST_PORT}:${CONTAINER_PORT} --env-file=${ENV_FINAL_LIVE} -v ${CUSTOM_VOLUME_DATA} --name ${CONTAINER_NAME}-${HOST_PORT} ${DOCKER_IMAGE_TAG}
                                 
                                 echo "Docker image ${DOCKER_IMAGE_TAG} run successfully."
                                 exit
