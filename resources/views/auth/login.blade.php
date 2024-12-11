@@ -26,7 +26,7 @@
 				<div class="auth-box">
                     <div class="top">
                         {{-- <img src="{{ asset('assets/images/logo-white.svg') }}" alt="Lucid"> --}}
-                        <h1 class="text-white">Cliemr</h1>
+                        <h1 class="text-white">CliEMR</h1>
                     </div>
 					<div class="card">
                         <div class="header">
