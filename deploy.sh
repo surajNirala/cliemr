@@ -7,7 +7,7 @@ buildNumber=$1
 echo " Injected buildNumber is: $buildNumber"
 
 # Define the path to your environment file
-envFile="/root/srj/cliemr/env/.env"
+envFile="/home/srj/cliemr/env/.env"
 
 # Pull the latest Docker image with the provided build number
 docker pull snirala1995/cliemr:${buildNumber}
@@ -18,4 +18,4 @@ docker rm cliemr-container
 
 # Run the Docker container with the environment file
 # docker run -dt --name cliemr-container -p 9000:80 --env-file=${envFile} snirala1995/cliemr:${buildNumber}
-docker run -dt --name cliemr-container -p 9000:80 --env-file=${envFile} -v /root/srj/cliemr/custom_data:/var/www/html/public/custom_data snirala1995/cliemr:${buildNumber}
+docker run -dt --name cliemr-container -p 9000:80 --env-file=${envFile} -v /home/srj/cliemr/custom_data:/var/www/html/public/custom_data snirala1995/cliemr:${buildNumber}
