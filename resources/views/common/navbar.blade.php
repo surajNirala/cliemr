@@ -5,7 +5,7 @@
         </div>
 
         <div class="navbar-brand">
-            <a href="/"><img src="https://www.wrraptheme.com/templates/lucid/hospital/assets/images/logo.svg" alt="Lucid Logo" class="img-responsive logo"></a>                
+            <a href="/"><img src="{{ asset('custom_data/cliemr-logo.jpeg') }}" alt="Lucid Logo" class="img-responsive logo"></a>                
         </div>
         
         <div class="navbar-right">
