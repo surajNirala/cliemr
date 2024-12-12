@@ -102,7 +102,11 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="page-login.html" class="icon-menu"><i class="icon-login"></i></a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <a title="Logout" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="icon-menu"><i class="icon-login"></i></a>
+                        </form>
+                        {{-- <a href="page-login.html" class="icon-menu"><i class="icon-login"></i></a> --}}
                     </li>
                 </ul>
             </div>

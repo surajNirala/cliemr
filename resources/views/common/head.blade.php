@@ -21,4 +21,5 @@
     <!-- MAIN CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/color_skins.css') }}">
+    @yield('perticular_page_css')
 </head>

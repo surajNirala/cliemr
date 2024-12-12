@@ -69,6 +69,23 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="{{ Request::is('custom-templates*')  ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
+                                <i class="icon-layers"></i>
+                                <span>Custom Templates</span>
+                            </a>
+                            <ul aria-expanded="true" class="collapse {{ Request::is('custom-templates*') ? 'in' : '' }}">
+                                <li class="{{ Request::is('custom-templates/quicknotes*') ? 'active' : '' }}">
+                                    <a href="{{ url('custom-templates/quicknotes') }}">Quick Notes</a>
+                                </li>
+                                <li class="{{ Request::is('custom-templates/advice*') ? 'active' : '' }}">
+                                    <a href="{{ url('custom-templates/advice') }}">Advice</a>
+                                </li>
+                                <li class="{{ Request::is('custom-templates/testprescribes*') ? 'active' : '' }}">
+                                    <a href="{{ url('custom-templates/testprescribes') }}">Tes Prescribes</a>
+                                </li>
+                            </ul>
+                        </li>
                         @if (Auth::user()->flag == 1)
                         <li><a href="app-appointment.html"><i class="icon-calendar"></i>Appointment</a></li>
                         <li><a href="app-taskboard.html"><i class="icon-list"></i>Taskboard</a></li>
