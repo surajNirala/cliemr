@@ -250,7 +250,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('custom-templates/getquicknotes/change-status') }}"+`/${id}`,
+                url: "{{ url('custom-templates/quicknotes/change-status') }}"+`/${id}`,
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}', // Add CSRF token
@@ -324,7 +324,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('custom-templates/getquicknotes/delete') }}"+`/${id}`,
+                url: "{{ url('custom-templates/quicknotes/delete') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                 if (response.success) {
