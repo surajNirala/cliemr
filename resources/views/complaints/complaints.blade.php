@@ -15,6 +15,7 @@
     }
 </style>
 @endsection
+
 <div id="main-content">
     <div class="container-fluid">
         @include('common.block-header')
@@ -23,18 +24,18 @@
                 <div class="card">
                     <div class="header">
                         <h2>{{$title ? $title : "User Management"}}</h2>
-                        <button class="float-md-right btn btn-success btn-sm" onclick="showPermissions()">Add Permission</button>
+                        <button class="float-md-right btn btn-success btn-sm" onclick="showComplaints()">Add Complaint</button>
                     </div>
                     <div class="body">
                         <div class="table-responsive">
-                            <table class="table table-hover permissions_table dataTable">
+                            <table class="table table-hover complaint_table dataTable">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>#</th>
-                                        <th>Permission Name</th>
-                                        <th>User Name</th>
-                                        <th>Permission Detail</th>
+                                        <th>Title</th>
+                                        <th>Used Count</th>
                                         <th>Created At</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -43,7 +44,6 @@
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -55,18 +55,14 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="title" id="createModalLabel">Add Permission</h4>
+                <h4 class="title" id="createModalLabel">Add Complaint</h4>
             </div>
             <div id="formErrors"></div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Permission Name</label>
-                    <input type="text" class="form-control" name="name" id="name" required="">
-                    <input type="hidden" class="form-control" name="permission_id" id="permission_id">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea class="form-control" name="description" id="description" rows="5" cols="30" required=""></textarea>
+                    <label>Title</label>
+                    <input type="text" class="form-control" name="title" id="title" required="">
+                    <input type="hidden" class="form-control" name="complaint_id" id="complaint_id">
                 </div>
             </div>
             <div class="modal-footer">
@@ -92,12 +88,11 @@
         var table;
         $(document).ready(function () {
             try{
-                table = $('.permissions_table').DataTable({
+                table = $('.complaint_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ url('getpermissions') }}",
-                    // order: [[3, 'desc']],
-                    // $columns = ['permission_id', 'person_name', 'permission_name', 'description', 'status', 'created_at'];
+                    ajax: "{{ url('getcomplaints') }}",
+                    order: [[3, 'desc']],
                     columns: [
                         { 
                             data: null, 
@@ -108,31 +103,15 @@
                             searchable: false,
                             orderable: false
                         },
-
+                        // { data: 'id', name: 'id',visible: "{{ Auth::user()->id == 1 ? true : false }}" },
+                        { data: 'title', name: 'title' },
                         { 
-                            data:'permission_name',
-                            name:'permission_name',
-                           /*  render: function(data, type, row){
-                                return `<span class="badge badge-primary">${row.permission_name}</span>`
-                            } */
-                        },
-
-                        { 
-                            data: 'person_name', 
-                            name: 'person_name' 
-                        },
-
-                        { 
-                            data: 'permission_detail', 
-                            name: 'permission_detail',
-                            render: function (data, type, row) {
-                                if (data.length > 40) {
-                                    return `<span title="${data}">${data.substring(0, 40)}...</span>`;
-                                }
-                                return `<span title="${data}">${data}</span>`;
+                            data:'used_count',
+                            name:'used_count',
+                            render: function(data, type, row){
+                                return `<span class="badge badge-primary">${row.used_count}</span>`
                             }
                         },
-
                         { 
                             data: 'created_at', 
                             name: 'created_at',
@@ -140,7 +119,16 @@
                                 return moment(data).format('MMM DD, YYYY'); // "Dec 12, 2024"
                             }
                         },
-
+                        { 
+                            data: 'status', 
+                            name: 'status',
+                            visible:false,
+                            render: function (data, type, row) {
+                                return data == 1 ? 
+                                `<button data-id="${row.id}" class="btn btn-sm badge badge-success" onclick="changeStatus(${row.id}, 0)"><i class="fa fa-toggle-on"></button>`:
+                                `<button data-id="${row.id}" class="btn btn-sm badge badge-danger" onclick="changeStatus(${row.id}, 1)"><i class="fa fa-toggle-off"></button>`;
+                            }
+                        },
                         { 
                             data: null, 
                             name:'action',
@@ -153,7 +141,7 @@
                                         <button 
                                             title="Active" 
                                             class="btn btn-sm badge badge-success" 
-                                            onclick="changeStatus(${row.permission_id}, 0)">
+                                            onclick="changeStatus(${row.id}, 0)">
                                             <i class="fa fa-toggle-on"></i>
                                         </button>`;
                                 } else {
@@ -161,7 +149,7 @@
                                         <button 
                                             title="Inactive" 
                                             class="btn btn-sm badge badge-danger" 
-                                            onclick="changeStatus(${row.permission_id}, 1)">
+                                            onclick="changeStatus(${row.id}, 1)">
                                             <i class="fa fa-toggle-off"></i>
                                         </button>`;
                                 }
@@ -170,8 +158,8 @@
                                
 
                                 return `
-                                    <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.permission_id})" ><i class="fa fa-pencil"></i></button>
-                                    <button title="Delete" class="btn btn-sm badge badge-danger" onclick="deleteRow(${row.permission_id})" ><i class="fa fa-trash"></i></button>
+                                    <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.id}, 0)" ><i class="fa fa-pencil"></i></button>
+                                    <button title="Delete" class="btn btn-sm badge badge-danger" onclick="deleteRow(${row.id})" ><i class="fa fa-trash"></i></button>
 
                                     ${statusButton}
                                 `;
@@ -190,28 +178,25 @@
             }
         });
 
-        function showPermissions(){
-            document.getElementById('name').value = '';
-            document.getElementById('description').value = '';  
-            document.getElementById('permission_id').value = ''; 
+        function showComplaints(){
+            document.getElementById('title').value = '';  
+            document.getElementById('complaint_id').value = ''; 
             document.getElementById('formErrors').innerHTML = '';
-            $("#createModalLabel").text("Add Permission")
+            $("#createModalLabel").text("Add Complaint")
             $("#createModal").modal('show')
         }
 
         function storeData() {
             $("#formErrors").html('')
-            const name = $('#name').val();
-            const description = $('#description').val();
-            const permission_id = $('#permission_id').val();
+            const title = $('#title').val();
+            const complaint_id = $('#complaint_id').val();
             $.ajax({
-                url: "{{ url('permissions/store') }}",
+                url: "{{ url('complaints/store') }}",
                 method: "POST",
                 data: {
                     _token: "{{ csrf_token() }}", // CSRF token for security
-                    name: name,
-                    description:description,
-                    permission_id:permission_id
+                    title: title,
+                    complaint_id:complaint_id
                 },
                 success: function(response) {
                     if (response.success) {                        
@@ -255,7 +240,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('permissions/change-status') }}"+`/${id}`,
+                url: "{{ url('complaints/change-status') }}"+`/${id}`,
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}', // Add CSRF token
@@ -276,19 +261,17 @@
         }
 
         function editRow(id) {
-            document.getElementById('name').value = '';
-            document.getElementById('description').value = ''; 
-            document.getElementById('permission_id').value = id; 
+            document.getElementById('title').value = ''; 
+            document.getElementById('complaint_id').value = id; 
             document.getElementById('formErrors').innerHTML = '';
-            $("#createModalLabel").text("Edit Permission")
+            $("#createModalLabel").text("Edit Complaint")
             $.ajax({
-                url: "{{ url('permissions/edit') }}"+`/${id}`,
+                url: "{{ url('complaints/edit') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                     if (response.success) {                       
                         console.log(response.data);
-                        $('#name').val(response.data.name); 
-                        $('#description').val(response.data.description);                      
+                        $('#title').val(response.data.title);                       
                         $("#createModal").modal('show')
                     } else {
                         toastr['error'](response.message);
@@ -329,7 +312,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('permissions/delete') }}"+`/${id}`,
+                url: "{{ url('complaints/delete') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                 if (response.success) {

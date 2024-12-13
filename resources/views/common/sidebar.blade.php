@@ -56,7 +56,7 @@
                             </a>
                             <ul aria-expanded="true" class="collapse {{ Request::is('users*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'in' : '' }}">
                                 <li class="{{ Request::is('users*') ? 'active' : '' }}">
-                                    <a href="{{ url('users') }}">Users</a>
+                                    <a href="{{ url('users') }}">Users (Coming soon)</a>
                                 </li>
                                 <li class="{{ Request::is('role-permission*') ? 'active' : '' }}">
                                     <a href="{{ url('role-permission') }}">Role Permission</a>
@@ -85,6 +85,15 @@
                                     <a href="{{ url('custom-templates/testprescribes') }}">Tes Prescribes</a>
                                 </li>
                             </ul>
+                        </li>
+                        <li class="{{ Request::is('complaints*')  ? 'active' : '' }}">
+                            <a href="{{ url('complaints') }}"><i class="icon-list"></i>Complaints Remembered</a>
+                        </li>
+                        <li class="{{ Request::is('diagnosis*')  ? 'active' : '' }}">
+                            <a href="{{ url('diagnosis') }}"><i class="icon-list"></i>Diagnosis Remembered</a>
+                        </li>
+                        <li class="{{ Request::is('notes*')  ? 'active' : '' }}">
+                            <a href="{{ url('notes') }}"><i class="icon-list"></i>Notes Remembered</a>
                         </li>
                         @if (Auth::user()->flag == 1)
                         <li><a href="app-appointment.html"><i class="icon-calendar"></i>Appointment</a></li>

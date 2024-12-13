@@ -35,7 +35,6 @@
                                         <th>#</th>
                                         <th>Title</th>
                                         <th>Description</th>
-                                        <th>Used Count</th>
                                         <th>Created At</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -98,7 +97,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: "{{ url('custom-templates/getquicknotes') }}",
-                    order: [[5, 'desc']],
+                    order: [[4, 'desc']],
                     columns: [
                         { 
                             data: null, 
@@ -112,13 +111,13 @@
                         // { data: 'id', name: 'id',visible: "{{ Auth::user()->id == 1 ? true : false }}" },
                         { data: 'title', name: 'title' },
                         { data: 'description', name: 'description' },
-                        { 
+                        /* { 
                             data:'used_count',
                             name:'used_count',
                             render: function(data, type, row){
                                 return `<span class="badge badge-primary">${row.used_count}</span>`
                             }
-                        },
+                        }, */
                         { 
                             data: 'created_at', 
                             name: 'created_at',

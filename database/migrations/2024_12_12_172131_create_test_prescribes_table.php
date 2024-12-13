@@ -18,7 +18,6 @@ class CreateTestPrescribesTable extends Migration
             $table->bigInteger('user_id');
             $table->string('title');
             $table->text('description');
-            $table->bigInteger('used_count')->default(1);
             $table->tinyInteger('flag')->default(1);
             $table->tinyInteger('status')->default(1);
             $table->timestamps();

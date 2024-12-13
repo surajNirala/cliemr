@@ -2,34 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\QuickNote;
+use App\Models\Diagnosis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class QuickNoteController extends Controller
+class DiagnosisController extends Controller
 {
-    function quicknotes(Request $request){
-        $data['title'] = 'Quick Note';
-        return view('custom_templates.quicknotes.quick-notes',$data);
+    function diagnosis(Request $request){
+        $data['title'] = 'Diagnosis Remembered';
+        return view('diagnosis.diagnosis',$data);
     }
 
-    public function getquicknotes(Request $request)
+    public function getdiagnosis(Request $request)
     {
         // Base query
-        $query = QuickNote::query();
+        $query = Diagnosis::query();
         // Search functionality
         if ($request->has('search') && $request->search['value'] != '') {
             $search = $request->search['value'];
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+                $q->where('title', 'like', "%{$search}%");
             });
         }
 
         // Sorting functionality
         if ($request->has('order')) {
-            $columns = ['id', 'title', 'description', 'status', 'created_at'];
+            $columns = ['id', 'title', 'status', 'created_at'];
             $columnIndex = $request->order[0]['column']; // Column index
             $sortColumn = $columns[$columnIndex]; // Column name
             $sortDirection = $request->order[0]['dir']; // Sort direction (asc/desc)
@@ -54,10 +53,9 @@ class QuickNoteController extends Controller
         ]);
     }
 
-    function quicknotes_store(Request $request){
+    function diagnosis_store(Request $request){
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
         ]);
     
         if ($validator->fails()) {
@@ -69,54 +67,53 @@ class QuickNoteController extends Controller
         $customArr = [
             'user_id' => Auth::user()->id,
             'title' => $request->title,
-            'description' => $request->description,
         ];
-        if(!empty($request->quick_note_id)){
-            $quickNote = QuickNote::where('id', $request->quick_note_id)->update($customArr);
+        if(!empty($request->diagnosis_id)){
+            $diagnosis = Diagnosis::where('id', $request->diagnosis_id)->update($customArr);
         }else{
-            $quickNote = QuickNote::create($customArr);
+            $diagnosis = Diagnosis::create($customArr);
         }
-        if ($quickNote) {
-            $message = 'Quick Note Created Successfully!';
-            if(!empty($request->quick_note_id)){
-                $message = 'Quick Note Updated Successfully!';
+        if ($diagnosis) {
+            $message = 'Diagnosis Created Successfully!';
+            if(!empty($request->diagnosis_id)){
+                $message = 'Diagnosis Updated Successfully!';
             }
             return response()->json(['success' => true, 'message' => $message]);
         } else {
-            return response()->json(['success' => false, 'message' => 'Failed to Quick note!']);
+            return response()->json(['success' => false, 'message' => 'Failed to Diagnosis!']);
         }
     }
 
-    public function quicknotes_change_status($id, Request $request)
+    public function diagnosis_change_status($id, Request $request)
     {
-        $quickNote = QuickNote::find($id);
-        if ($quickNote) {
-            $quickNote->status = $request->status;
-            $quickNote->save();
-            $message = "Quick Note Status Inactive Successfully.";
+        $diagnosis = Diagnosis::find($id);
+        if ($diagnosis) {
+            $diagnosis->status = $request->status;
+            $diagnosis->save();
+            $message = "Diagnosis Status Inactive Successfully.";
             if($request->status == 1){
-                $message = "Quick Note Status Active Successfully.";
+                $message = "Diagnosis Status Active Successfully.";
             }
             return response()->json(['success' => true,'message' => $message]);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
     }
 
-    public function quicknotes_edit($id)
+    public function diagnosis_edit($id)
     {
-        $quickNote = QuickNote::where('id',$id)->first();
-        if ($quickNote) {
-            return response()->json(['success' => true,'message' => 'Fetch Quick Note.', 'data' => $quickNote]);
+        $diagnosis = Diagnosis::where('id',$id)->first();
+        if ($diagnosis) {
+            return response()->json(['success' => true,'message' => 'Fetch Diagnosis.', 'data' => $diagnosis]);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
     }
 
-    public function quicknotes_delete($id)
+    public function diagnosis_delete($id)
     {
-        $quickNote = QuickNote::find($id);
-        if ($quickNote) {
-            $quickNote->delete();
-            return response()->json(['success' => true,'message' => 'Quick Note Deleted Successfully.']);
+        $diagnosis = Diagnosis::find($id);
+        if ($diagnosis) {
+            $diagnosis->delete();
+            return response()->json(['success' => true,'message' => 'Diagnosis Deleted Successfully.']);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
     }

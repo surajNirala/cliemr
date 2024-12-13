@@ -7,7 +7,10 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Database\Seeders\NoteSeeder;
 use Database\Seeders\AdviceSeeder;
+use Database\Seeders\ComplaintSeeder;
+use Database\Seeders\DiagnosisSeeder;
 use Database\Seeders\QuickNoteSeeder;
 use Database\Seeders\SpecialitySeeder;
 use Database\Seeders\TestPrescribeSeeder;
@@ -89,5 +92,8 @@ class DatabaseSeeder extends Seeder
         $this->call(QuickNoteSeeder::class);
         $this->call(AdviceSeeder::class);
         $this->call(TestPrescribeSeeder::class);
+        $this->call(ComplaintSeeder::class);
+        $this->call(DiagnosisSeeder::class);
+        $this->call(NoteSeeder::class);
     }
 }

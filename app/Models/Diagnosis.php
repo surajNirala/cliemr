@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Permission;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Diagnosis extends Model
 {
     use HasFactory;
 
@@ -17,7 +14,7 @@ class Role extends Model
      *
      * @var string
      */
-    protected $table = 'roles';
+    protected $table = 'diagnoses';
     
 
     /**
@@ -33,16 +30,4 @@ class Role extends Model
      * @var bool
      */
     public $timestamps = true;
-
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class);
-    }
-
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class);
-    }
-
-
 }

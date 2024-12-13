@@ -29,7 +29,7 @@ class TestPrescribeController extends Controller
 
         // Sorting functionality
         if ($request->has('order')) {
-            $columns = ['id', 'title', 'description', 'used_count', 'status', 'created_at'];
+            $columns = ['id', 'title', 'description', 'status', 'created_at'];
             $columnIndex = $request->order[0]['column']; // Column index
             $sortColumn = $columns[$columnIndex]; // Column name
             $sortDirection = $request->order[0]['dir']; // Sort direction (asc/desc)

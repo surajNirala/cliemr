@@ -4,8 +4,11 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdviceController;
+use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\QuickNoteController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\TestPrescribeController;
@@ -46,23 +49,30 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/users', [UserController::class, 'users'])->name('users');
+    Route::get('/users1', [UserController::class, 'users1'])->name('users1');
     Route::get('/users/create', [UserController::class, 'users_create'])->name('users_create');
     Route::post('/users/store', [UserController::class, 'users_store'])->name('users_store');
+    Route::get('/users', [UserController::class, 'users'])->name('users');
+    Route::get('/getusers', [UserController::class, 'getusers'])->name('getusers');
     
     Route::get('/role-permission', [RolePermission::class, 'role_permission'])->name('role_permission');
     Route::post('/fetch-user', [RolePermission::class, 'fetch_user'])->name('fetch_user');
 
     /************* RoleController *************/    
     Route::get('/roles', [RoleController::class, 'roles'])->name('roles');
-    Route::get('/roles/create', [RoleController::class, 'roles_create'])->name('roles_create');
-    Route::post('/roles/store', [RoleController::class, 'roles_store'])->name('roles_store');
-
+    Route::get('/getroles', [RoleController::class, 'getroles'])->name('getroles');
+    Route::post('roles/store', [RoleController::class, 'roles_store'])->name('roles_store');
+    Route::post('roles/change-status/{id}', [RoleController::class, 'roles_change_status'])->name('roles_change_status');
+    Route::get('roles/delete/{id}', [RoleController::class, 'roles_delete'])->name('roles_delete');    
+    Route::get('roles/edit/{id}', [RoleController::class, 'roles_edit'])->name('roles_edit');    
+    
     /************* PermissionController *************/    
     Route::get('/permissions', [PermissionController::class, 'permissions'])->name('permissions');
-    Route::get('/permissions/create', [PermissionController::class, 'permissions_create'])->name('permissions_create');
-    Route::post('/permissions/store', [PermissionController::class, 'permissions_store'])->name('permissions_store');
-
+    Route::get('/getpermissions', [PermissionController::class, 'getpermissions'])->name('getpermissions');
+    Route::post('permissions/store', [PermissionController::class, 'permissions_store'])->name('permissions_store');
+    Route::post('permissions/change-status/{id}', [PermissionController::class, 'permissions_change_status'])->name('permissions_change_status');
+    Route::get('permissions/delete/{id}', [PermissionController::class, 'permissions_delete'])->name('permissions_delete');    
+    Route::get('permissions/edit/{id}', [PermissionController::class, 'permissions_edit'])->name('permissions_edit'); 
     /************* QuickNoteController *************/    
     Route::get('custom-templates/quicknotes', [QuickNoteController::class, 'quicknotes'])->name('quicknotes');
     Route::get('custom-templates/getquicknotes', [QuickNoteController::class, 'getquicknotes'])->name('getquicknotes');
@@ -87,6 +97,30 @@ Route::middleware('auth')->group(function () {
     Route::post('custom-templates/testprescribes/change-status/{id}', [TestPrescribeController::class, 'testprescribes_change_status'])->name('testprescribes_change_status');
     Route::get('custom-templates/testprescribes/delete/{id}', [TestPrescribeController::class, 'testprescribes_delete'])->name('testprescribes_delete');    
     Route::get('custom-templates/testprescribes/edit/{id}', [TestPrescribeController::class, 'testprescribes_edit'])->name('testprescribes_edit');    
+    
+    /************* ComplaintController *************/    
+    Route::get('complaints', [ComplaintController::class, 'complaints'])->name('complaints');
+    Route::get('getcomplaints', [ComplaintController::class, 'getcomplaints'])->name('getcomplaints');
+    Route::post('complaints/store', [ComplaintController::class, 'complaints_store'])->name('complaints_store');
+    Route::post('complaints/change-status/{id}', [ComplaintController::class, 'complaints_change_status'])->name('complaints_change_status');
+    Route::get('complaints/delete/{id}', [ComplaintController::class, 'complaints_delete'])->name('complaints_delete');    
+    Route::get('complaints/edit/{id}', [ComplaintController::class, 'complaints_edit'])->name('complaints_edit');    
+    
+    /************* DiagnosisController *************/    
+    Route::get('diagnosis', [DiagnosisController::class, 'diagnosis'])->name('diagnosis');
+    Route::get('getdiagnosis', [DiagnosisController::class, 'getdiagnosis'])->name('getdiagnosis');
+    Route::post('diagnosis/store', [DiagnosisController::class, 'diagnosis_store'])->name('diagnosis_store');
+    Route::post('diagnosis/change-status/{id}', [DiagnosisController::class, 'diagnosis_change_status'])->name('diagnosis_change_status');
+    Route::get('diagnosis/delete/{id}', [DiagnosisController::class, 'diagnosis_delete'])->name('diagnosis_delete');    
+    Route::get('diagnosis/edit/{id}', [DiagnosisController::class, 'diagnosis_edit'])->name('diagnosis_edit');    
+    
+    /************* NoteController *************/    
+    Route::get('notes', [NoteController::class, 'notes'])->name('notes');
+    Route::get('getnotes', [NoteController::class, 'getnotes'])->name('getnotes');
+    Route::post('notes/store', [NoteController::class, 'notes_store'])->name('notes_store');
+    Route::post('notes/change-status/{id}', [NoteController::class, 'notes_change_status'])->name('notes_change_status');
+    Route::get('notes/delete/{id}', [NoteController::class, 'notes_delete'])->name('notes_delete');    
+    Route::get('notes/edit/{id}', [NoteController::class, 'notes_edit'])->name('notes_edit');    
  
 
 });
