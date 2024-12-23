@@ -69,4 +69,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 Jenkinsfile-old
-
+custom_data/

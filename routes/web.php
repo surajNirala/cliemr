@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdviceController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\QuickNoteController;
@@ -52,8 +53,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/users1', [UserController::class, 'users1'])->name('users1');
     Route::get('/users/create', [UserController::class, 'users_create'])->name('users_create');
     Route::post('/users/store', [UserController::class, 'users_store'])->name('users_store');
+    Route::post('/users/store-new', [UserController::class, 'users_store_new'])->name('users_store_new');
     Route::get('/users', [UserController::class, 'users'])->name('users');
     Route::get('/getusers', [UserController::class, 'getusers'])->name('getusers');
+    Route::get('users/edit/{id}', [UserController::class, 'users_edit'])->name('users_edit');  
+    Route::post('users/update', [UserController::class, 'users_update'])->name('users_update');  
+    Route::get('users/delete/{id}', [UserController::class, 'users_delete'])->name('users_delete'); 
+    Route::get('users/permissions/{id}', [UserController::class, 'users_permissions'])->name('users_permissions'); 
+    Route::post('users/permissions/save', [UserController::class, 'users_permissions_save'])->name('users_permissions_save'); 
+    Route::post('users/change-status/{id}', [UserController::class, 'users_change_status'])->name('users_change_status');
     
     Route::get('/role-permission', [RolePermission::class, 'role_permission'])->name('role_permission');
     Route::post('/fetch-user', [RolePermission::class, 'fetch_user'])->name('fetch_user');
@@ -120,7 +128,16 @@ Route::middleware('auth')->group(function () {
     Route::post('notes/store', [NoteController::class, 'notes_store'])->name('notes_store');
     Route::post('notes/change-status/{id}', [NoteController::class, 'notes_change_status'])->name('notes_change_status');
     Route::get('notes/delete/{id}', [NoteController::class, 'notes_delete'])->name('notes_delete');    
-    Route::get('notes/edit/{id}', [NoteController::class, 'notes_edit'])->name('notes_edit');    
+    Route::get('notes/edit/{id}', [NoteController::class, 'notes_edit'])->name('notes_edit'); 
+    
+    
+    /************* MedicineLibraryController *************/    
+    Route::get('/medicines', [MedicineController::class, 'medicines'])->name('medicines');
+    Route::get('/getmedicines', [MedicineController::class, 'getmedicines'])->name('getmedicines');
+    Route::post('medicines/store', [MedicineController::class, 'medicines_store'])->name('medicines_store');
+    Route::post('medicines/change-status/{id}', [MedicineController::class, 'medicines_change_status'])->name('medicines_change_status');
+    Route::get('medicines/delete/{id}', [MedicineController::class, 'medicines_delete'])->name('medicines_delete');    
+    Route::get('medicines/edit/{id}', [MedicineController::class, 'medicines_edit'])->name('medicines_edit');  
  
 
 });

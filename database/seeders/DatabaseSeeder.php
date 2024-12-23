@@ -9,12 +9,15 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Database\Seeders\NoteSeeder;
 use Database\Seeders\AdviceSeeder;
+use Database\Seeders\MedicineSeeder;
 use Database\Seeders\ComplaintSeeder;
 use Database\Seeders\DiagnosisSeeder;
 use Database\Seeders\QuickNoteSeeder;
 use Database\Seeders\SpecialitySeeder;
+use Database\Seeders\MedicineTypeSeeder;
 use Database\Seeders\TestPrescribeSeeder;
 use Database\Seeders\RolesPermissionsSeeder;
+use Database\Seeders\MedicineAdministrationSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -95,5 +98,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ComplaintSeeder::class);
         $this->call(DiagnosisSeeder::class);
         $this->call(NoteSeeder::class);
+        $this->call(MedicineTypeSeeder::class);
+        $this->call(MedicineAdministrationSeeder::class);
+        $this->call(MedicineSeeder::class);
     }
 }

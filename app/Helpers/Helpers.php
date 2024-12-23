@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Role;
+use App\Models\User;
 use App\Models\Staff;
 use App\Models\Permission;
 use App\Models\Speciality;
@@ -58,6 +59,22 @@ function getAllActiveRoles(){
 function getAllActiveSpeciality(){
     $info = Speciality::where('status',1)->get();
     return $info;
+}
+
+function generateUniqueUsername($name)
+{
+    // Convert the name to lowercase, remove spaces, and special characters
+    $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($name));
+    
+    // Append a random number to ensure uniqueness
+    $username = $baseUsername . rand(1000, 9999);
+    
+    // Check if the username already exists
+    while (User::where('username', $username)->exists()) {
+        $username = $baseUsername . rand(1000, 9999);
+    }
+    
+    return $username;
 }
 
 

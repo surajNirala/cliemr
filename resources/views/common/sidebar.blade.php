@@ -56,7 +56,7 @@
                             </a>
                             <ul aria-expanded="true" class="collapse {{ Request::is('users*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'in' : '' }}">
                                 <li class="{{ Request::is('users*') ? 'active' : '' }}">
-                                    <a href="{{ url('users') }}">Users (Coming soon)</a>
+                                    <a href="{{ url('users') }}">Users</a>
                                 </li>
                                 <li class="{{ Request::is('role-permission*') ? 'active' : '' }}">
                                     <a href="{{ url('role-permission') }}">Role Permission</a>
@@ -94,6 +94,26 @@
                         </li>
                         <li class="{{ Request::is('notes*')  ? 'active' : '' }}">
                             <a href="{{ url('notes') }}"><i class="icon-list"></i>Notes Remembered</a>
+                        </li>
+                        <li class="{{ Request::is('medicines*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
+                                <i class="fa fa-medkit"></i>
+                                <span>Medicines Management</span>
+                            </a>
+                            <ul aria-expanded="true" class="collapse {{ Request::is('medicines*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'in' : '' }}">
+                                <li class="{{ Request::is('medicines*') ? 'active' : '' }}">
+                                    <a href="{{ url('medicines') }}">Medicine Library</a>
+                                </li>
+                                {{-- <li class="{{ Request::is('role-permission*') ? 'active' : '' }}">
+                                    <a href="{{ url('role-permission') }}">Role Permission</a>
+                                </li>
+                                <li class="{{ Request::is('roles*') ? 'active' : '' }}">
+                                    <a href="{{ url('roles') }}">Roles</a>
+                                </li>
+                                <li class="{{ Request::is('permissions*') ? 'active' : '' }}">
+                                    <a href="{{ url('permissions') }}">Permissions</a>
+                                </li> --}}
+                            </ul>
                         </li>
                         @if (Auth::user()->flag == 1)
                         <li><a href="app-appointment.html"><i class="icon-calendar"></i>Appointment</a></li>
