@@ -308,7 +308,6 @@ class UserController extends Controller
                 'name' => $name,
                 'email' => $email,
                 'phone' => $phone,
-                'password' => $password,
                 'image' => $filePath,
             ];
             if ($request->password) {
