@@ -422,6 +422,9 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if ($user) {
+            if($user->email == 'superadmin@gmail.com'){
+                return response()->json(['success' => false,'message' => 'Not Allowed to inactive super admin.']);
+            }
             $user->status = $request->status;
             $user->save();
             $message = "User Status Inactive Successfully.";

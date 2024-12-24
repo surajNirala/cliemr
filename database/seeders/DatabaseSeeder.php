@@ -16,6 +16,7 @@ use Database\Seeders\QuickNoteSeeder;
 use Database\Seeders\SpecialitySeeder;
 use Database\Seeders\MedicineTypeSeeder;
 use Database\Seeders\TestPrescribeSeeder;
+use Database\Seeders\MedicineLibrarySeeder;
 use Database\Seeders\RolesPermissionsSeeder;
 use Database\Seeders\MedicineAdministrationSeeder;
 
@@ -101,5 +102,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MedicineTypeSeeder::class);
         $this->call(MedicineAdministrationSeeder::class);
         $this->call(MedicineSeeder::class);
+        $this->call(MedicineLibrarySeeder::class);
     }
 }

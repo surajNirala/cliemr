@@ -24,7 +24,8 @@
                 <div class="card">
                     <div class="header">
                         <h2>{{$title ? $title : "User Management"}}</h2>
-                        <button class="float-md-right btn btn-success btn-sm" onclick="showNotes()">Add Note</button>
+                        {{-- <button id="refreshTable" class="btn btn-primary refreshTable">Refresh Table</button> --}}
+                        <button class="float-md-right btn btn-success btn-sm" onclick="showMedicine()">Add Medicine</button>
                     </div>
                     <div class="body">
                         <div class="table-responsive">
@@ -32,11 +33,10 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>#</th>
-                                        <th>Type</th>
-                                        <th>Medicine Name</th>
-                                        <th>Dosage</th>
-                                        <th>Administration</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
                                         <th>Created At</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -63,7 +63,11 @@
                 <div class="form-group">
                     <label>Title</label>
                     <input type="text" class="form-control" name="title" id="title" required="">
-                    <input type="hidden" class="form-control" name="note_id" id="note_id">
+                    <input type="hidden" class="form-control" name="medicine_id" id="medicine_id">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" name="description" id="description" rows="5" cols="30" required=""></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -93,7 +97,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: "{{ url('getmedicines') }}",
-                    // order: [[3, 'desc']],
+                    order: [[4, 'desc']],
                     columns: [
                         { 
                             data: null, 
@@ -104,47 +108,23 @@
                             searchable: false,
                             orderable: false
                         },
-                        { 
-                            data: 'medicine_type_name', 
-                            name: 'medicine_type_name',
-                        },
-                        { 
-                            data:'medicine_name',
-                            name:'medicine_name',
-                        },
-                        { 
-                            data:'dosage1',
-                            name:'dosage1',
-                            render: function(data, type, row){
-                                return `<span class="badge badge-primary">${row.dosage1}</span>
-                                        -
-                                        <span class="badge badge-primary">${row.dosage2}</span>
-                                        -
-                                        <span class="badge badge-primary">${row.dosage3}</span>
-                                        `
-                            }
-                        },
-                        { 
-                            data:'medicine_administration_name',
-                            name:'medicine_administration_name',
-                        },
-                        /* { 
-                            data:'dosage',
-                            name:'dosage',
-                            render: function(data, type, row){
-                                return `<span class="badge badge-primary">${row.dosage1}</span>
-                                        -
-                                        <span class="badge badge-primary">${row.dosage2}</span>
-                                        -
-                                        <span class="badge badge-primary">${row.dosage3}</span>
-                                        `
-                            }
-                        }, */
+                        { data: 'title', name: 'title' },
+                        { data: 'description', name: 'description' },
                         { 
                             data: 'created_at', 
                             name: 'created_at',
                             render: function (data, type, row) {
                                 return moment(data).format('MMM DD, YYYY'); // "Dec 12, 2024"
+                            }
+                        },
+                        { 
+                            data: 'status', 
+                            name: 'status',
+                            visible:false,
+                            render: function (data, type, row) {
+                                return data == 1 ? 
+                                `<button data-id="${row.id}" class="btn btn-sm badge badge-success" onclick="changeStatus(${row.id}, 0)"><i class="fa fa-toggle-on"></button>`:
+                                `<button data-id="${row.id}" class="btn btn-sm badge badge-danger" onclick="changeStatus(${row.id}, 1)"><i class="fa fa-toggle-off"></button>`;
                             }
                         },
                         { 
@@ -159,7 +139,7 @@
                                         <button 
                                             title="Active" 
                                             class="btn btn-sm badge badge-success" 
-                                            onclick="changeStatus(${row.medicine_id}, 0)">
+                                            onclick="changeStatus(${row.id}, 0)">
                                             <i class="fa fa-toggle-on"></i>
                                         </button>`;
                                 } else {
@@ -167,16 +147,12 @@
                                         <button 
                                             title="Inactive" 
                                             class="btn btn-sm badge badge-danger" 
-                                            onclick="changeStatus(${row.medicine_id}, 1)">
+                                            onclick="changeStatus(${row.id}, 1)">
                                             <i class="fa fa-toggle-off"></i>
                                         </button>`;
                                 }
-                               
-
-                               
-
                                 return `
-                                    <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.id}, 0)" ><i class="fa fa-pencil"></i></button>
+                                    <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.id})" ><i class="fa fa-pencil"></i></button>
                                     <button title="Delete" class="btn btn-sm badge badge-danger" onclick="deleteRow(${row.id})" ><i class="fa fa-trash"></i></button>
 
                                     ${statusButton}
@@ -196,25 +172,28 @@
             }
         });
 
-        function showNotes(){
-            document.getElementById('title').value = '';  
-            document.getElementById('note_id').value = ''; 
+        function showMedicine(){
+            document.getElementById('title').value = ''; 
+            document.getElementById('description').value = ''; 
+            document.getElementById('medicine_id').value = ''; 
             document.getElementById('formErrors').innerHTML = '';
-            $("#createModalLabel").text("Add Note")
+            $("#createModalLabel").text("Add Medicine")
             $("#createModal").modal('show')
         }
 
         function storeData() {
             $("#formErrors").html('')
             const title = $('#title').val();
-            const note_id = $('#note_id').val();
+            const description = $('#description').val();
+            const medicine_id = $('#medicine_id').val();
             $.ajax({
-                url: "{{ url('notes/store') }}",
+                url: "{{ url('medicines/store') }}",
                 method: "POST",
                 data: {
                     _token: "{{ csrf_token() }}", // CSRF token for security
                     title: title,
-                    note_id:note_id
+                    description: description,
+                    medicine_id:medicine_id
                 },
                 success: function(response) {
                     if (response.success) {                        
@@ -258,7 +237,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('notes/change-status') }}"+`/${id}`,
+                url: "{{ url('medicines/change-status') }}"+`/${id}`,
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}', // Add CSRF token
@@ -280,16 +259,18 @@
 
         function editRow(id) {
             document.getElementById('title').value = ''; 
-            document.getElementById('note_id').value = id; 
+            document.getElementById('description').value = ''; 
+            document.getElementById('medicine_id').value = id; 
             document.getElementById('formErrors').innerHTML = '';
-            $("#createModalLabel").text("Edit Note")
+            $("#createModalLabel").text("Edit Medicine")
             $.ajax({
-                url: "{{ url('notes/edit') }}"+`/${id}`,
+                url: "{{ url('medicines/edit') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                     if (response.success) {                       
                         console.log(response.data);
-                        $('#title').val(response.data.title);                       
+                        $('#title').val(response.data.title);
+                        $('#description').val(response.data.description);                        
                         $("#createModal").modal('show')
                     } else {
                         toastr['error'](response.message);
@@ -330,7 +311,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('notes/delete') }}"+`/${id}`,
+                url: "{{ url('medicines/delete') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                 if (response.success) {

@@ -3,8 +3,11 @@
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Staff;
+use App\Models\Medicine;
 use App\Models\Permission;
 use App\Models\Speciality;
+use App\Models\MedicineType;
+use App\Models\MedicineAdministration;
 function getStaffs($id=null){
     $staffs = Staff::get();
     return $staffs;
@@ -75,6 +78,18 @@ function generateUniqueUsername($name)
     }
     
     return $username;
+}
+
+function getAllActiveMedicineType(){
+    return MedicineType::where('status', 1)->get();
+}
+
+function getAllActiveMedicines(){
+    return Medicine::latest('created_at')->where('status', 1)->get();
+}
+
+function getAllActiveMedicineAdministration(){
+    return MedicineAdministration::latest('created_at')->where('status', 1)->get();
 }
 
 

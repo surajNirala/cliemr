@@ -19,6 +19,7 @@
                     </li>
                 </ul>
             </div>
+            @if (Auth::user()->flag == 1)
             <hr>
             <ul class="row list-unstyled">
                 <li class="col-4">
@@ -34,7 +35,10 @@
                     <h6>213</h6>
                 </li>
             </ul>
+            @endif
         </div>
+
+        @if (Auth::user()->flag == 1)
         <!-- Nav tabs -->
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#menu">Menu</a></li>                
@@ -42,13 +46,14 @@
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Chat"><i class="icon-book-open"></i></a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#setting"><i class="icon-settings"></i></a></li>                
         </ul>
+        @endif
             
         <!-- Tab panes -->
         <div class="tab-content p-l-0 p-r-0">
             <div class="tab-pane active" id="menu">
                 <nav class="sidebar-nav">
                     <ul class="main-menu metismenu">
-                        <li class="active"><a href="{{ route('dashboard') }}"><i class="icon-home"></i><span>Dashboard</span></a></li>
+                        <li><a href="{{ route('dashboard') }}"><i class="icon-home"></i><span>Dashboard</span></a></li>
                         <li class="{{ Request::is('users*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'active' : '' }}">
                             <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
                                 <i class="icon-users"></i>
@@ -95,18 +100,19 @@
                         <li class="{{ Request::is('notes*')  ? 'active' : '' }}">
                             <a href="{{ url('notes') }}"><i class="icon-list"></i>Notes Remembered</a>
                         </li>
-                        <li class="{{ Request::is('medicines*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'active' : '' }}">
+                        <li class="{{ Request::is('medicinelibraries*') || Request::is('medicines*')  ? 'active' : '' }}">
                             <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
                                 <i class="fa fa-medkit"></i>
-                                <span>Medicines Management</span>
+                                <span>Medicine Management</span>
                             </a>
-                            <ul aria-expanded="true" class="collapse {{ Request::is('medicines*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'in' : '' }}">
+                            <ul aria-expanded="true" class="collapse {{ Request::is('medicinelibraries*') || Request::is('medicines*')  ? 'in' : '' }}">
                                 <li class="{{ Request::is('medicines*') ? 'active' : '' }}">
-                                    <a href="{{ url('medicines') }}">Medicine Library</a>
+                                    <a href="{{ url('medicines') }}">Medicine</a>
                                 </li>
-                                {{-- <li class="{{ Request::is('role-permission*') ? 'active' : '' }}">
-                                    <a href="{{ url('role-permission') }}">Role Permission</a>
+                                <li class="{{ Request::is('medicinelibraries*') ? 'active' : '' }}">
+                                    <a href="{{ url('medicinelibraries') }}">Medicine Library</a>
                                 </li>
+                                {{-- 
                                 <li class="{{ Request::is('roles*') ? 'active' : '' }}">
                                     <a href="{{ url('roles') }}">Roles</a>
                                 </li>

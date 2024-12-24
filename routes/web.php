@@ -13,6 +13,7 @@ use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\QuickNoteController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\TestPrescribeController;
+use App\Http\Controllers\MedicineLibraryController;
 use App\Http\Controllers\UserManagment\RolePermission;
 use App\Http\Controllers\UserManagment\UserController;
 
@@ -81,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::post('permissions/change-status/{id}', [PermissionController::class, 'permissions_change_status'])->name('permissions_change_status');
     Route::get('permissions/delete/{id}', [PermissionController::class, 'permissions_delete'])->name('permissions_delete');    
     Route::get('permissions/edit/{id}', [PermissionController::class, 'permissions_edit'])->name('permissions_edit'); 
+
     /************* QuickNoteController *************/    
     Route::get('custom-templates/quicknotes', [QuickNoteController::class, 'quicknotes'])->name('quicknotes');
     Route::get('custom-templates/getquicknotes', [QuickNoteController::class, 'getquicknotes'])->name('getquicknotes');
@@ -131,13 +133,23 @@ Route::middleware('auth')->group(function () {
     Route::get('notes/edit/{id}', [NoteController::class, 'notes_edit'])->name('notes_edit'); 
     
     
+     /************* MedicineController *************/    
+     Route::get('medicines', [MedicineController::class, 'medicines'])->name('medicines');
+     Route::get('getmedicines', [MedicineController::class, 'getmedicines'])->name('getmedicines');
+     Route::post('medicines/store', [MedicineController::class, 'medicines_store'])->name('medicines_store');
+     Route::post('medicines/change-status/{id}', [MedicineController::class, 'medicines_change_status'])->name('medicines_change_status');
+     Route::get('medicines/delete/{id}', [MedicineController::class, 'medicines_delete'])->name('medicines_delete');    
+     Route::get('medicines/edit/{id}', [MedicineController::class, 'medicines_edit'])->name('medicines_edit');    
+ 
+
     /************* MedicineLibraryController *************/    
-    Route::get('/medicines', [MedicineController::class, 'medicines'])->name('medicines');
-    Route::get('/getmedicines', [MedicineController::class, 'getmedicines'])->name('getmedicines');
-    Route::post('medicines/store', [MedicineController::class, 'medicines_store'])->name('medicines_store');
-    Route::post('medicines/change-status/{id}', [MedicineController::class, 'medicines_change_status'])->name('medicines_change_status');
-    Route::get('medicines/delete/{id}', [MedicineController::class, 'medicines_delete'])->name('medicines_delete');    
-    Route::get('medicines/edit/{id}', [MedicineController::class, 'medicines_edit'])->name('medicines_edit');  
+    Route::get('/medicinelibraries', [MedicineLibraryController::class, 'medicinelibraries'])->name('medicinelibraries');
+    Route::get('/getmedicinelibraries', [MedicineLibraryController::class, 'getmedicinelibraries'])->name('getmedicinelibraries');
+    Route::post('medicinelibraries/store', [MedicineLibraryController::class, 'medicinelibraries_store'])->name('medicinelibraries_store');
+    Route::get('medicinelibraries/edit/{id}', [MedicineLibraryController::class, 'medicines_edit'])->name('medicines_edit');  
+    Route::post('medicinelibraries/update', [MedicineLibraryController::class, 'medicinelibraries_update'])->name('medicinelibraries_update');
+    Route::post('medicinelibraries/change-status/{id}', [MedicineLibraryController::class, 'medicinelibraries_change_status'])->name('medicinelibraries_change_status');
+    Route::get('medicinelibraries/delete/{id}', [MedicineLibraryController::class, 'medicinelibraries_delete'])->name('medicinelibraries_delete');    
  
 
 });
