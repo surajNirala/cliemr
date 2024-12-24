@@ -181,7 +181,8 @@ class UserController extends Controller
             $filePath = null;
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $directoryPath = public_path('custom_data'); // Define the directory path
+                $foldername = 'custom_data';
+                $directoryPath = public_path($foldername); // Define the directory path
                 // Check if the directory exists
                 if (!file_exists($directoryPath)) {
                     // Create the directory with 777 permissions
@@ -191,7 +192,7 @@ class UserController extends Controller
                 }
                 // Define the file path
                 $fileName = time() . '_' . $file->getClientOriginalName(); // Generate a unique file name
-                $filePath = $directoryPath . '/' . $fileName;
+                $filePath = $foldername . '/' . $fileName;
                 // Move the uploaded file to the directory
                 $file->move($directoryPath, $fileName);
             }
@@ -276,7 +277,8 @@ class UserController extends Controller
             $filePath = null;
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $directoryPath = public_path('custom_data'); // Define the directory path
+                $foldername = 'custom_data';
+                $directoryPath = public_path($foldername); // Define the directory path
                 // Check if the directory exists
                 if (!file_exists($directoryPath)) {
                     // Create the directory with 777 permissions
@@ -286,7 +288,7 @@ class UserController extends Controller
                 }
                 // Define the file path
                 $fileName = time() . '_' . $file->getClientOriginalName(); // Generate a unique file name
-                $filePath = $directoryPath . '/' . $fileName;
+                $filePath = $foldername . '/' . $fileName;
                 // Move the uploaded file to the directory
                 $file->move($directoryPath, $fileName);
             }
