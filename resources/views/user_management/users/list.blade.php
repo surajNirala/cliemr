@@ -290,7 +290,7 @@
                                 // console.log("row.image   ====  ",row.image);
                                 
                                 if(row.image){
-                                    return `<img src="${row.image}" class="rounded-circle m-r-15" alt="profile-image" width="50">`
+                                    return `<img src="{{baseURL()}}${row.image}" class="rounded-circle m-r-15" alt="profile-image" width="50">`
                                 }else{
 
                                     return `<img src="../assets/images/xs/avatar3.jpg" class="rounded-circle width30 m-r-15" alt="profile-image">`

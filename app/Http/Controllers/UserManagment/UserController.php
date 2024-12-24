@@ -297,7 +297,6 @@ class UserController extends Controller
             $username = generateUniqueUsername($name);
             $email = $request->email;
             $phone = $request->phone;
-            $password = Hash::make($request->password);
             $user_id = $request->user_id;
             $gender = $request->gender;
             $signature_text = $request->signature_text;
@@ -312,6 +311,9 @@ class UserController extends Controller
                 'password' => $password,
                 'image' => $filePath,
             ];
+            if ($request->password) {
+                $userArr['password'] = Hash::make($request->password);
+            }
 
             $user = User::find($request->user_id);
             if (!$user) {

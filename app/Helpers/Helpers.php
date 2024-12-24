@@ -92,4 +92,9 @@ function getAllActiveMedicineAdministration(){
     return MedicineAdministration::latest('created_at')->where('status', 1)->get();
 }
 
+function baseURL(){
+    return env('APP_URL');
+    // return 'http://cliemr.corevista.in/';
+}
+
 
