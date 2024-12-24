@@ -181,9 +181,19 @@ class UserController extends Controller
             $filePath = null;
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
+                $directoryPath = public_path('custom_data'); // Define the directory path
+                // Check if the directory exists
+                if (!file_exists($directoryPath)) {
+                    // Create the directory with 777 permissions
+                    mkdir($directoryPath, 0777, true);
+                    // Verify permissions
+                    chmod($directoryPath, 0777);
+                }
+                // Define the file path
                 $fileName = time() . '_' . $file->getClientOriginalName(); // Generate a unique file name
-                $filePath = 'custom_data/' . $fileName; // Define the path within the public directory
-                $file->move(public_path('custom_data'), $fileName); 
+                $filePath = $directoryPath . '/' . $fileName;
+                // Move the uploaded file to the directory
+                $file->move($directoryPath, $fileName);
             }
 
             $role_id = $request->role_id;
@@ -275,8 +285,8 @@ class UserController extends Controller
                     chmod($directoryPath, 0777);
                 }
                 // Define the file path
-                $filePath = $directoryPath . '/' . $fileName;
                 $fileName = time() . '_' . $file->getClientOriginalName(); // Generate a unique file name
+                $filePath = $directoryPath . '/' . $fileName;
                 // Move the uploaded file to the directory
                 $file->move($directoryPath, $fileName);
             }
