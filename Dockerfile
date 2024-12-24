@@ -55,4 +55,5 @@ RUN chown -R www-data:www-data /var/www/html
 EXPOSE 80
 
 # Start Apache service
-CMD ["apache2-foreground"]
+# Run Composer install command and start Apache service when container starts
+CMD ["bash", "-c", "composer install && apache2-foreground"]
