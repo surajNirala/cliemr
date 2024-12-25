@@ -69,7 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/fetch-user', [RolePermission::class, 'fetch_user'])->name('fetch_user');
 
     /************* RoleController *************/    
-    Route::get('/roles', [RoleController::class, 'roles'])->name('roles')->middleware('permission:roles');
+    Route::get('/roles', [RoleController::class, 'roles'])->name('roles');//->middleware('permission:roles');
     Route::get('/getroles', [RoleController::class, 'getroles'])->name('getroles');
     Route::post('roles/store', [RoleController::class, 'roles_store'])->name('roles_store');
     Route::post('roles/change-status/{id}', [RoleController::class, 'roles_change_status'])->name('roles_change_status');
@@ -77,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::get('roles/edit/{id}', [RoleController::class, 'roles_edit'])->name('roles_edit');    
     
     /************* PermissionController *************/    
-    Route::get('/permissions', [PermissionController::class, 'permissions'])->name('permissions')->middleware('permission:permissions');
+    Route::get('/permissions', [PermissionController::class, 'permissions'])->name('permissions');//->middleware('permission:permissions');
     Route::get('/getpermissions', [PermissionController::class, 'getpermissions'])->name('getpermissions');
     Route::post('permissions/store', [PermissionController::class, 'permissions_store'])->name('permissions_store');
     Route::post('permissions/change-status/{id}', [PermissionController::class, 'permissions_change_status'])->name('permissions_change_status');
