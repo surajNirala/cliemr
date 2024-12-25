@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/create', [UserController::class, 'users_create'])->name('users_create');
     Route::post('/users/store', [UserController::class, 'users_store'])->name('users_store');
 
-    Route::get('/users', [UserController::class, 'users'])->name('users')->middleware('permission:users');
+    Route::get('/users', [UserController::class, 'users'])->name('users');
     Route::get('/getusers', [UserController::class, 'getusers'])->name('getusers');
     Route::post('/users/store-new', [UserController::class, 'users_store_new'])->name('users_store_new');
     Route::get('users/edit/{id}', [UserController::class, 'users_edit'])->name('users_edit');  
