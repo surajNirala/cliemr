@@ -54,9 +54,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/users1', [UserController::class, 'users1'])->name('users1');
     Route::get('/users/create', [UserController::class, 'users_create'])->name('users_create');
     Route::post('/users/store', [UserController::class, 'users_store'])->name('users_store');
-    Route::post('/users/store-new', [UserController::class, 'users_store_new'])->name('users_store_new');
-    Route::get('/users', [UserController::class, 'users'])->name('users');
+
+    Route::get('/users', [UserController::class, 'users'])->name('users')->middleware('permission:users');
     Route::get('/getusers', [UserController::class, 'getusers'])->name('getusers');
+    Route::post('/users/store-new', [UserController::class, 'users_store_new'])->name('users_store_new');
     Route::get('users/edit/{id}', [UserController::class, 'users_edit'])->name('users_edit');  
     Route::post('users/update', [UserController::class, 'users_update'])->name('users_update');  
     Route::get('users/delete/{id}', [UserController::class, 'users_delete'])->name('users_delete'); 
@@ -68,7 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/fetch-user', [RolePermission::class, 'fetch_user'])->name('fetch_user');
 
     /************* RoleController *************/    
-    Route::get('/roles', [RoleController::class, 'roles'])->name('roles');
+    Route::get('/roles', [RoleController::class, 'roles'])->name('roles')->middleware('permission:roles');
     Route::get('/getroles', [RoleController::class, 'getroles'])->name('getroles');
     Route::post('roles/store', [RoleController::class, 'roles_store'])->name('roles_store');
     Route::post('roles/change-status/{id}', [RoleController::class, 'roles_change_status'])->name('roles_change_status');
@@ -76,20 +77,22 @@ Route::middleware('auth')->group(function () {
     Route::get('roles/edit/{id}', [RoleController::class, 'roles_edit'])->name('roles_edit');    
     
     /************* PermissionController *************/    
-    Route::get('/permissions', [PermissionController::class, 'permissions'])->name('permissions');
+    Route::get('/permissions', [PermissionController::class, 'permissions'])->name('permissions')->middleware('permission:permissions');
     Route::get('/getpermissions', [PermissionController::class, 'getpermissions'])->name('getpermissions');
     Route::post('permissions/store', [PermissionController::class, 'permissions_store'])->name('permissions_store');
     Route::post('permissions/change-status/{id}', [PermissionController::class, 'permissions_change_status'])->name('permissions_change_status');
     Route::get('permissions/delete/{id}', [PermissionController::class, 'permissions_delete'])->name('permissions_delete');    
     Route::get('permissions/edit/{id}', [PermissionController::class, 'permissions_edit'])->name('permissions_edit'); 
 
-    /************* QuickNoteController *************/    
-    Route::get('custom-templates/quicknotes', [QuickNoteController::class, 'quicknotes'])->name('quicknotes');
-    Route::get('custom-templates/getquicknotes', [QuickNoteController::class, 'getquicknotes'])->name('getquicknotes');
-    Route::post('custom-templates/quicknotes/store', [QuickNoteController::class, 'quicknotes_store'])->name('quicknotes_store');
-    Route::post('custom-templates/quicknotes/change-status/{id}', [QuickNoteController::class, 'quicknotes_change_status'])->name('quicknotes_change_status');
-    Route::get('custom-templates/quicknotes/delete/{id}', [QuickNoteController::class, 'quicknotes_delete'])->name('quicknotes_delete');    
-    Route::get('custom-templates/quicknotes/edit/{id}', [QuickNoteController::class, 'quicknotes_edit'])->name('quicknotes_edit');    
+    /************* QuickNoteController *************/  
+    // Route::middleware(['role:SUPERADMIN,ADMIN,DOCTOR'])->group(function () {  
+        Route::get('custom-templates/quicknotes', [QuickNoteController::class, 'quicknotes'])->name('quicknotes');
+        Route::get('custom-templates/getquicknotes', [QuickNoteController::class, 'getquicknotes'])->name('getquicknotes');
+        Route::post('custom-templates/quicknotes/store', [QuickNoteController::class, 'quicknotes_store'])->name('quicknotes_store');
+        Route::post('custom-templates/quicknotes/change-status/{id}', [QuickNoteController::class, 'quicknotes_change_status'])->name('quicknotes_change_status');
+        Route::get('custom-templates/quicknotes/delete/{id}', [QuickNoteController::class, 'quicknotes_delete'])->name('quicknotes_delete');    
+        Route::get('custom-templates/quicknotes/edit/{id}', [QuickNoteController::class, 'quicknotes_edit'])->name('quicknotes_edit');  
+    // });  
 
     
     /************* AdviceController *************/    
@@ -134,7 +137,7 @@ Route::middleware('auth')->group(function () {
     
     
      /************* MedicineController *************/    
-     Route::get('medicines', [MedicineController::class, 'medicines'])->name('medicines');
+     Route::get('medicines', [MedicineController::class, 'medicines'])->name('medicines')->middleware('permission:medicines');
      Route::get('getmedicines', [MedicineController::class, 'getmedicines'])->name('getmedicines');
      Route::post('medicines/store', [MedicineController::class, 'medicines_store'])->name('medicines_store');
      Route::post('medicines/change-status/{id}', [MedicineController::class, 'medicines_change_status'])->name('medicines_change_status');

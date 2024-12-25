@@ -96,7 +96,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: "{{ url('getpermissions') }}",
-                    // order: [[3, 'desc']],
+                    order: [[5, 'desc']],
                     // $columns = ['permission_id', 'person_name', 'permission_name', 'description', 'status', 'created_at'];
                     columns: [
                         { 

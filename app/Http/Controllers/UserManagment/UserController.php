@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    
     function users1(Request $request){
         $data['users'] = User::latest('created_at')->paginate(10);
         return view('user_management.users1.list',$data);

@@ -6,9 +6,9 @@ pipeline {
         CONTAINER_NAME = 'cliemr' // Name for your Docker container
         CONTAINER_PORT = '80' // Port inside the Docker container
         CREDENTIAL_SNIRALA_DOCKERHUB = 'credentials-snirala-dockerhub'
-        CREDENTIALS_GOLANG_SERVER = 'credentials-golang-server'
-        JENKINS_SERVER = '35.200.176.111'
-        GOLANG_SERVER = '34.131.166.50'
+        CREDENTIALS_COREVISTA_SERVER = 'credentials-corevista-server'
+        JENKINS_SERVER = '34.131.218.39'
+        COREVISTA_SERVER = '34.131.119.202'
         ENV_FINAL_LIVE = '/home/srj/cliemr/env/.env'
         CUSTOM_VOLUME_DATA = '/home/srj/cliemr/custom_data:/var/www/html/public/custom_data'
     }
@@ -22,10 +22,10 @@ pipeline {
                     // Set ports based on the selected environment
                     if (params.ENVIRONMENT == 'Dev') {
                         env.HOST_PORT = '9001'
-                        env.SERVER_IP = "http://${GOLANG_SERVER}:${env.HOST_PORT}"
+                        env.SERVER_IP = "http://${COREVISTA_SERVER}:${env.HOST_PORT}"
                     } else if (params.ENVIRONMENT == 'Live') {
                         env.HOST_PORT = '9000'
-                        env.SERVER_IP = "http://${GOLANG_SERVER}:${env.HOST_PORT}"
+                        env.SERVER_IP = "http://${COREVISTA_SERVER}:${env.HOST_PORT}"
                     }
                 }
             }
@@ -74,13 +74,13 @@ pipeline {
             steps {
                 script {
                     if (params.ENVIRONMENT == 'Dev' || params.ENVIRONMENT == 'Live') {
-                        echo "Deploying to ================= SRJ-SERVER ============== (${GOLANG_SERVER})"
-                        sshagent([CREDENTIALS_GOLANG_SERVER]) {
-                            echo "Deploying to ${GOLANG_SERVER} on port ${HOST_PORT} with image ${DOCKER_IMAGE_TAG}"
+                        echo "Deploying to ================= SRJ-SERVER ============== (${COREVISTA_SERVER})"
+                        sshagent([CREDENTIALS_COREVISTA_SERVER]) {
+                            echo "Deploying to ${COREVISTA_SERVER} on port ${HOST_PORT} with image ${DOCKER_IMAGE_TAG}"
                             withCredentials([usernamePassword(credentialsId: CREDENTIAL_SNIRALA_DOCKERHUB, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){
                             sh """
-                                echo "Connecting to ${GOLANG_SERVER}..."
-                                ssh -o StrictHostKeyChecking=no srj@${GOLANG_SERVER} <<EOF
+                                echo "Connecting to ${COREVISTA_SERVER}..."
+                                ssh -o StrictHostKeyChecking=no srj@${COREVISTA_SERVER} <<EOF
                                 echo "Remote server connected successfully!"
 
                                 echo "Logging into DockerHub"
