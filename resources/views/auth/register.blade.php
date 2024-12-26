@@ -35,6 +35,8 @@
                             <p class="lead">Create an account</p>
                         </div>
                         <div class="body">
+                            @include("common.errors")
+                            @include("common.message")
                             <form class="form-auth-small" method="POST" action="{{ route('register') }}">
                                 @csrf
                                 <div class="form-group">
