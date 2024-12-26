@@ -114,6 +114,9 @@
                             data: 'created_at', 
                             name: 'created_at',
                             render: function (data, type, row) {
+                                if(row.created_at == "" || row.created_at == null){
+                                    return "";
+                                }
                                 return moment(data).format('MMM DD, YYYY'); // "Dec 12, 2024"
                             }
                         },
