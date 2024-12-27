@@ -21,5 +21,11 @@
     <!-- MAIN CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/color_skins.css') }}">
+    <style>
+        .table {
+            width: 100% !important;
+            table-layout: auto !important;
+        }
+    </style>
     @yield('perticular_page_css')
 </head>

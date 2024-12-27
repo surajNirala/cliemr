@@ -75,6 +75,7 @@
     background-color: #f8f9fa;
 }
 
+
 </style>
 
 @endsection
@@ -404,7 +405,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: "{{ url('getmedicinelibraries') }}",
-                    order: [[7, 'desc']],
+                    order: [[6, 'desc']],
                     columns: [
                         { 
                             data: null, 

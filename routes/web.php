@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RouteController;
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ComplaintController;
@@ -28,6 +29,12 @@ use App\Http\Controllers\UserManagment\UserController;
 |
 */
 
+Route::get('/routes', [RouteController::class, 'showRoutes']);
+Route::middleware('auth')->group(function () {
+    Route::get('/routes-auth', [RouteController::class, 'showRoutesAuth'])->name('routes_auth');
+    Route::get('/routes-permissions-linked/{permission}', [RouteController::class, 'routes_permissions_linked'])->name('routes_permissions_linked');
+    
+});
 
 Route::get('clear-all', function () {
     \Artisan::call('cache:clear');
@@ -55,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/create', [UserController::class, 'users_create'])->name('users_create');
     Route::post('/users/store', [UserController::class, 'users_store'])->name('users_store');
 
-    Route::get('/users', [UserController::class, 'users'])->name('users');
+    Route::get('/users', [UserController::class, 'users'])->name('users');//->middleware('role:Anthropometry,SUPERADMIN');
     Route::get('/getusers', [UserController::class, 'getusers'])->name('getusers');
     Route::post('/users/store-new', [UserController::class, 'users_store_new'])->name('users_store_new');
     Route::get('users/edit/{id}', [UserController::class, 'users_edit'])->name('users_edit');  
@@ -85,18 +92,20 @@ Route::middleware('auth')->group(function () {
     Route::get('permissions/edit/{id}', [PermissionController::class, 'permissions_edit'])->name('permissions_edit'); 
 
     /************* QuickNoteController *************/  
-    // Route::middleware(['role:SUPERADMIN,ADMIN,DOCTOR'])->group(function () {  
+    Route::middleware(['role:SUPERADMIN,ADMIN,DOCTOR,Anthropometry'])->group(function () {  
         Route::get('custom-templates/quicknotes', [QuickNoteController::class, 'quicknotes'])->name('quicknotes');
         Route::get('custom-templates/getquicknotes', [QuickNoteController::class, 'getquicknotes'])->name('getquicknotes');
+    });  
         Route::post('custom-templates/quicknotes/store', [QuickNoteController::class, 'quicknotes_store'])->name('quicknotes_store');
         Route::post('custom-templates/quicknotes/change-status/{id}', [QuickNoteController::class, 'quicknotes_change_status'])->name('quicknotes_change_status');
         Route::get('custom-templates/quicknotes/delete/{id}', [QuickNoteController::class, 'quicknotes_delete'])->name('quicknotes_delete');    
         Route::get('custom-templates/quicknotes/edit/{id}', [QuickNoteController::class, 'quicknotes_edit'])->name('quicknotes_edit');  
-    // });  
 
     
-    /************* AdviceController *************/    
-    Route::get('custom-templates/advice', [AdviceController::class, 'advice'])->name('advice');
+    /************* AdviceController *************/  
+    Route::middleware(['role:SUPERADMIN,ADMIN,DOCTOR,Anthropometry'])->group(function () {   
+        Route::get('custom-templates/advice', [AdviceController::class, 'advice'])->name('advice');
+    });
     Route::get('custom-templates/getadvice', [AdviceController::class, 'getadvice'])->name('getadvice');
     Route::post('custom-templates/advice/store', [AdviceController::class, 'advice_store'])->name('advice_store');
     Route::post('custom-templates/advice/change-status/{id}', [AdviceController::class, 'advice_change_status'])->name('advice_change_status');
@@ -111,13 +120,15 @@ Route::middleware('auth')->group(function () {
     Route::get('custom-templates/testprescribes/delete/{id}', [TestPrescribeController::class, 'testprescribes_delete'])->name('testprescribes_delete');    
     Route::get('custom-templates/testprescribes/edit/{id}', [TestPrescribeController::class, 'testprescribes_edit'])->name('testprescribes_edit');    
     
-    /************* ComplaintController *************/    
-    Route::get('complaints', [ComplaintController::class, 'complaints'])->name('complaints');
-    Route::get('getcomplaints', [ComplaintController::class, 'getcomplaints'])->name('getcomplaints');
-    Route::post('complaints/store', [ComplaintController::class, 'complaints_store'])->name('complaints_store');
-    Route::post('complaints/change-status/{id}', [ComplaintController::class, 'complaints_change_status'])->name('complaints_change_status');
-    Route::get('complaints/delete/{id}', [ComplaintController::class, 'complaints_delete'])->name('complaints_delete');    
-    Route::get('complaints/edit/{id}', [ComplaintController::class, 'complaints_edit'])->name('complaints_edit');    
+    /************* ComplaintController *************/  
+    Route::middleware(['role:SUPERADMIN,ADMIN,DOCTOR,Anthropometry'])->group(function () {   
+        Route::get('complaints', [ComplaintController::class, 'complaints'])->name('complaints');
+        Route::get('getcomplaints', [ComplaintController::class, 'getcomplaints'])->name('getcomplaints');
+        Route::post('complaints/store', [ComplaintController::class, 'complaints_store'])->name('complaints_store');
+        Route::post('complaints/change-status/{id}', [ComplaintController::class, 'complaints_change_status'])->name('complaints_change_status');
+        Route::get('complaints/delete/{id}', [ComplaintController::class, 'complaints_delete'])->name('complaints_delete');    
+        Route::get('complaints/edit/{id}', [ComplaintController::class, 'complaints_edit'])->name('complaints_edit'); 
+    });   
     
     /************* DiagnosisController *************/    
     Route::get('diagnosis', [DiagnosisController::class, 'diagnosis'])->name('diagnosis');

@@ -640,6 +640,15 @@
                 type: 'GET',
                 success: function(response) {
                     if (response.status) {
+                        const user = response.data; 
+                        if(user.image){
+                            image_url = `<img src="{{baseURL()}}${user.image}" class="rounded-circle m-r-15" alt="profile-image" width="50">`
+                        }else{
+                            image_url = `<img src="../assets/images/xs/avatar3.jpg" class="rounded-circle width30 m-r-15" alt="profile-image">`
+                        }
+                       //`<img src="../assets/images/xs/avatar3.jpg" class="rounded-circle width30 m-r-15" alt="profile-image">`
+                       $("#permissionModalLabel").html(`${image_url} ${user.person_name || 'Unknown User'} Permissions`);
+                        // $("#permissionModalLabel").text(`<img src="../assets/images/xs/avatar3.jpg" class="rounded-circle width30 m-r-15" alt="profile-image"> ${user.person_name} information`)
                         $("#permission_user_id").val(id)
                         const permissionList = $('.permission_append');
                             // Clear existing options

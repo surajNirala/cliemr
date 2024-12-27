@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -89,6 +90,26 @@ class PermissionController extends Controller
         }else{
             $customArr['user_id'] = Auth::user()->id;
             $permission = Permission::create($customArr);
+            $columns = [
+                'roles.id as id',
+            ];
+            $role = Role::select($columns)
+                        ->leftJoin('role_user', 'roles.id', '=', 'role_user.role_id')
+                        ->leftJoin('users', 'users.id', '=', 'role_user.user_id')
+                        ->where('users.id', Auth::user()->id)
+                        ->first();
+            if($role->id != 1){
+                $columns = [
+                    'roles.id as id',
+                ];
+                $adminrole = Role::select($columns)
+                            ->leftJoin('role_user', 'roles.id', '=', 'role_user.role_id')
+                            ->leftJoin('users', 'users.id', '=', 'role_user.user_id')
+                            ->where('users.flag',1)
+                            ->first();
+                $adminrole->permissions()->sync([$permission->id]);
+            }
+            $role->permissions()->sync([$permission->id]);
         }
         if ($permission) {
             $message = 'Permission Created Successfully!';
@@ -130,6 +151,15 @@ class PermissionController extends Controller
         $permission = Permission::find($id);
         if ($permission) {
             $permission->delete();
+            $columns = [
+                'roles.id as id',
+            ];
+            $role = Role::select($columns)
+                        ->leftJoin('role_user', 'roles.id', '=', 'role_user.role_id')
+                        ->leftJoin('users', 'users.id', '=', 'role_user.user_id')
+                        ->where('users.id', Auth::user()->id)
+                        ->first();
+            $role->permissions()->detach($permission->id);
             return response()->json(['success' => true,'message' => 'Permission Deleted Successfully.']);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);

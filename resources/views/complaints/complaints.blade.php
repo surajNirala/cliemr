@@ -255,7 +255,11 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -278,7 +282,12 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    // alert('Error: ' + error);
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -326,7 +335,14 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    swal("Error!", 'Something went wrong. Please try again.', "error");
+                    // Check if the response contains a message
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    // Display the error using SweetAlert
+                    swal("Error!", errorMessage, "error");
                 }
             });
         }

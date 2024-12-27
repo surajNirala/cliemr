@@ -462,8 +462,35 @@ class UserController extends Controller
     public function users_permissions($id)
     {
         try {
+            $columns = [
+                'users.id as user_id',
+                'users.name as person_name',
+                'users.username as username',
+                'users.email as email',
+                'users.phone as phone',
+                'users.image as image',
+                'users.status as status',
+                'users.created_at as created_at',
+                'profiles.gender as gender',
+                'profiles.signature_text as signature_text',
+                'profiles.dob as dob',
+                'profiles.signature_image as signature_image',
+                'profiles.speciality_id as speciality_id',
+                'specialities.name as specialist_name',
+                'roles.name as role_name',
+                'roles.id as role_id',
+            ];
+            
+            $user = User::select($columns)
+                ->leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
+                ->leftJoin('specialities', 'users.id', '=', 'specialities.user_id')
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->leftJoin('roles', 'roles.id', '=', 'role_user.role_id')
+                ->where('users.id',$id)
+                ->first();
             $response = [
                 'status' => true, 
+                'data' => $user,
                 'getAllActivePermissions' => getAllActivePermissions(),
                 'getAllPermissionIds' => getUserPermissions($id,true),
                 'message'=> 'User permissions.'

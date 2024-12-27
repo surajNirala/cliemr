@@ -3,8 +3,8 @@
         <div class="user-account">
             <img src="../assets/images/user.png" class="rounded-circle user-photo" alt="User Profile Picture">
             <div class="dropdown">
-                <span>Welcome,</span>
-                <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>{{Auth::user()->name}}</strong></a>
+                <span>Welcome, {{Auth::user()->name}}</span>
+                <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>{{getRole(Auth::user()->id)}}</strong></a>
                 <ul class="dropdown-menu dropdown-menu-right account">
                     <li><a href="doctor-profile.html"><i class="icon-user"></i>My Profile</a></li>
                     <li><a href="app-inbox.html"><i class="icon-envelope-open"></i>Messages</a></li>
@@ -87,7 +87,7 @@
                                     <a href="{{ url('custom-templates/advice') }}">Advice</a>
                                 </li>
                                 <li class="{{ Request::is('custom-templates/testprescribes*') ? 'active' : '' }}">
-                                    <a href="{{ url('custom-templates/testprescribes') }}">Tes Prescribes</a>
+                                    <a href="{{ url('custom-templates/testprescribes') }}">Test Prescribes</a>
                                 </li>
                             </ul>
                         </li>
