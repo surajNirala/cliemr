@@ -121,6 +121,17 @@
                                 </li> --}}
                             </ul>
                         </li>
+                        <li class="{{ Request::is('patients*') || Request::is('medicines*')  ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
+                                <i class="fa fa-plus-square"></i>
+                                <span>Patient Management</span>
+                            </a>
+                            <ul aria-expanded="true" class="collapse {{ Request::is('patients*') || Request::is('medicines*')  ? 'in' : '' }}">
+                                <li class="{{ Request::is('patients*') ? 'active' : '' }}">
+                                    <a href="{{ url('patients') }}">Patients</a>
+                                </li>
+                            </ul>
+                        </li>
                         @if (Auth::user()->flag == 1)
                         <li><a href="app-appointment.html"><i class="icon-calendar"></i>Appointment</a></li>
                         <li><a href="app-taskboard.html"><i class="icon-list"></i>Taskboard</a></li>

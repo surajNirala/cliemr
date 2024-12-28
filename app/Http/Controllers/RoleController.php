@@ -63,33 +63,37 @@ class RoleController extends Controller
     }
 
     function roles_store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
-        }
-        $customArr = [
-            'name' => $request->name,
-        ];
-        if(!empty($request->role_id)){
-            $role = Role::where('id', $request->role_id)->update($customArr);
-        }else{
-            $customArr['user_id'] = Auth::user()->id;
-            $role = Role::create($customArr);
-        }
-        if ($role) {
-            $message = 'Role Created Successfully!';
-            if(!empty($request->role_id)){
-                $message = 'Role Updated Successfully!';
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422); // 422 Unprocessable Entity
             }
-            return response()->json(['success' => true, 'message' => $message]);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Failed to Role!']);
+            $customArr = [
+                'name' => $request->name,
+            ];
+            if(!empty($request->role_id)){
+                $role = Role::where('id', $request->role_id)->update($customArr);
+            }else{
+                $customArr['user_id'] = Auth::user()->id;
+                $role = Role::create($customArr);
+            }
+            if ($role) {
+                $message = 'Role Created Successfully!';
+                if(!empty($request->role_id)){
+                    $message = 'Role Updated Successfully!';
+                }
+                return response()->json(['success' => true, 'message' => $message]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Failed to Role!']);
+            }
+        } catch (\Exception $th) {
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
 

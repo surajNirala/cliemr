@@ -24,19 +24,19 @@
                 <div class="card">
                     <div class="header">
                         <h2>{{$title ? $title : "User Management"}}</h2>
-                        {{-- <button id="refreshTable" class="btn btn-primary refreshTable">Refresh Table</button> --}}
-                        <button class="float-md-right btn btn-success btn-sm" onclick="showQuickNote()">Add Quick Note</button>
+                        <button class="float-md-right btn btn-success btn-sm" onclick="showNotes()">Add Note</button>
                     </div>
                     <div class="body">
                         <div class="table-responsive">
-                            <table class="table table-hover quick_notes_table dataTable">
+                            <table class="table table-hover patients_table dataTable">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>#</th>
-                                        <th>Title</th>
-                                        <th>Description</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Phone</th>
                                         <th>Created At</th>
-                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -56,18 +56,14 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="title" id="createModalLabel">Add Quick Note</h4>
+                <h4 class="title" id="createModalLabel">Add Note</h4>
             </div>
             <div id="formErrors"></div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>Title</label>
                     <input type="text" class="form-control" name="title" id="title" required="">
-                    <input type="hidden" class="form-control" name="quick_note_id" id="quick_note_id">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea class="form-control" name="description" id="description" rows="5" cols="30" required=""></textarea>
+                    <input type="hidden" class="form-control" name="note_id" id="note_id">
                 </div>
             </div>
             <div class="modal-footer">
@@ -93,10 +89,10 @@
         var table;
         $(document).ready(function () {
             try{
-                table = $('.quick_notes_table').DataTable({
+                table = $('.patients_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ url('custom-templates/getquicknotes') }}",
+                    ajax: "{{ url('getpatients') }}",
                     order: [[4, 'desc']],
                     columns: [
                         { 
@@ -109,30 +105,21 @@
                             orderable: false
                         },
                         // { data: 'id', name: 'id',visible: "{{ Auth::user()->id == 1 ? true : false }}" },
-                        { data: 'title', name: 'title' },
-                        { data: 'description', name: 'description' },
-                        /* { 
-                            data:'used_count',
-                            name:'used_count',
+                        { data: 'name', name: 'name' },
+                        { data: 'age', name: 'age' },
+                        { data: 'gender', name: 'gender' },
+                        { 
+                            data:'phone',
+                            name:'phone',
                             render: function(data, type, row){
-                                return `<span class="badge badge-primary">${row.used_count}</span>`
+                                return `<span class="badge badge-primary">${row.phone}</span>`
                             }
-                        }, */
+                        },
                         { 
                             data: 'created_at', 
                             name: 'created_at',
                             render: function (data, type, row) {
                                 return moment(data).format('MMM DD, YYYY'); // "Dec 12, 2024"
-                            }
-                        },
-                        { 
-                            data: 'status', 
-                            name: 'status',
-                            visible:false,
-                            render: function (data, type, row) {
-                                return data == 1 ? 
-                                `<button data-id="${row.id}" class="btn btn-sm badge badge-success" onclick="changeStatus(${row.id}, 0)"><i class="fa fa-toggle-on"></button>`:
-                                `<button data-id="${row.id}" class="btn btn-sm badge badge-danger" onclick="changeStatus(${row.id}, 1)"><i class="fa fa-toggle-off"></button>`;
                             }
                         },
                         { 
@@ -147,7 +134,7 @@
                                         <button 
                                             title="Active" 
                                             class="btn btn-sm badge badge-success" 
-                                            onclick="changeStatus(${row.id}, 0)">
+                                            onclick="changeStatus(${row.patient_id}, 0)">
                                             <i class="fa fa-toggle-on"></i>
                                         </button>`;
                                 } else {
@@ -155,17 +142,14 @@
                                         <button 
                                             title="Inactive" 
                                             class="btn btn-sm badge badge-danger" 
-                                            onclick="changeStatus(${row.id}, 1)">
+                                            onclick="changeStatus(${row.patient_id}, 1)">
                                             <i class="fa fa-toggle-off"></i>
                                         </button>`;
                                 }
                                
-
-                               
-
                                 return `
-                                    <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.id})" ><i class="fa fa-pencil"></i></button>
-                                    <button title="Delete" class="btn btn-sm badge badge-danger" onclick="deleteRow(${row.id})" ><i class="fa fa-trash"></i></button>
+                                    <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.patient_id}, 0)" ><i class="fa fa-pencil"></i></button>
+                                    <button title="Delete" class="btn btn-sm badge badge-danger" onclick="deleteRow(${row.patient_id})" ><i class="fa fa-trash"></i></button>
 
                                     ${statusButton}
                                 `;
@@ -184,28 +168,25 @@
             }
         });
 
-        function showQuickNote(){
-            document.getElementById('title').value = ''; 
-            document.getElementById('description').value = ''; 
-            document.getElementById('quick_note_id').value = ''; 
+        function showNotes(){
+            document.getElementById('title').value = '';  
+            document.getElementById('note_id').value = ''; 
             document.getElementById('formErrors').innerHTML = '';
-            $("#createModalLabel").text("Add Quick Note")
+            $("#createModalLabel").text("Add Note")
             $("#createModal").modal('show')
         }
 
         function storeData() {
             $("#formErrors").html('')
             const title = $('#title').val();
-            const description = $('#description').val();
-            const quick_note_id = $('#quick_note_id').val();
+            const note_id = $('#note_id').val();
             $.ajax({
-                url: "{{ url('custom-templates/quicknotes/store') }}",
+                url: "{{ url('notes/store') }}",
                 method: "POST",
                 data: {
                     _token: "{{ csrf_token() }}", // CSRF token for security
                     title: title,
-                    description: description,
-                    quick_note_id:quick_note_id
+                    note_id:note_id
                 },
                 success: function(response) {
                     if (response.success) {                        
@@ -254,7 +235,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('custom-templates/quicknotes/change-status') }}"+`/${id}`,
+                url: "{{ url('notes/change-status') }}"+`/${id}`,
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}', // Add CSRF token
@@ -280,18 +261,16 @@
 
         function editRow(id) {
             document.getElementById('title').value = ''; 
-            document.getElementById('description').value = ''; 
-            document.getElementById('quick_note_id').value = id; 
+            document.getElementById('note_id').value = id; 
             document.getElementById('formErrors').innerHTML = '';
-            $("#createModalLabel").text("Edit Quick Note")
+            $("#createModalLabel").text("Edit Note")
             $.ajax({
-                url: "{{ url('custom-templates/quicknotes/edit') }}"+`/${id}`,
+                url: "{{ url('notes/edit') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                     if (response.success) {                       
                         console.log(response.data);
-                        $('#title').val(response.data.title);
-                        $('#description').val(response.data.description);                        
+                        $('#title').val(response.data.title);                       
                         $("#createModal").modal('show')
                     } else {
                         toastr['error'](response.message);
@@ -336,7 +315,7 @@
                 // positionClass: "toast-bottom-right",
             };
             $.ajax({
-                url: "{{ url('custom-templates/quicknotes/delete') }}"+`/${id}`,
+                url: "{{ url('notes/delete') }}"+`/${id}`,
                 method: 'GET',
                 success: function(response) {
                 if (response.success) {
@@ -350,11 +329,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    let errorMessage = "Something went wrong. Please try again.";
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    swal("Error!", errorMessage, "error");
+                    swal("Error!", 'Something went wrong. Please try again.', "error");
                 }
             });
         }

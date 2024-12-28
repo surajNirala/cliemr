@@ -153,7 +153,7 @@ class MedicineLibraryController extends Controller
         }
     }
 
-    public function medicines_edit($id)
+    public function medicinelibraries_edit($id)
     {
         try {
             $columns = [

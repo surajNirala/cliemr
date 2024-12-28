@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Database\Seeders\NoteSeeder;
 use Database\Seeders\AdviceSeeder;
+use Database\Seeders\PatientSeeder;
+use Database\Seeders\LanguageSeeder;
 use Database\Seeders\MedicineSeeder;
 use Database\Seeders\ComplaintSeeder;
 use Database\Seeders\DiagnosisSeeder;
@@ -103,5 +105,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MedicineAdministrationSeeder::class);
         $this->call(MedicineSeeder::class);
         $this->call(MedicineLibrarySeeder::class);
+        $this->call(LanguageSeeder::class);
+        $this->call(PatientSeeder::class);
     }
 }

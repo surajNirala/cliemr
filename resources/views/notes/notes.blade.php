@@ -154,9 +154,6 @@
                                         </button>`;
                                 }
                                
-
-                               
-
                                 return `
                                     <button title="Edit" class="btn btn-sm badge badge-success" onclick="editRow(${row.id}, 0)" ><i class="fa fa-pencil"></i></button>
                                     <button title="Delete" class="btn btn-sm badge badge-danger" onclick="deleteRow(${row.id})" ><i class="fa fa-trash"></i></button>
@@ -229,6 +226,11 @@
                                                     <i class="fa fa-times-circle"></i> Internal Server Error.
                                                 </div>`);
                     }
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -255,7 +257,11 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -278,7 +284,11 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }

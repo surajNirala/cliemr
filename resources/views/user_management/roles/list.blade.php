@@ -230,6 +230,11 @@
                                                     <i class="fa fa-times-circle"></i> Internal Server Error.
                                                 </div>`);
                     }
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -256,7 +261,11 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -279,7 +288,11 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }
@@ -327,7 +340,11 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    swal("Error!", 'Something went wrong. Please try again.', "error");
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    swal("Error!", errorMessage, "error");
                 }
             });
         }

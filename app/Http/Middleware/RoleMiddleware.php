@@ -47,12 +47,12 @@ class RoleMiddleware
     {
         // Check if the user is authenticated
         if (!auth()->check()) {
-            abort(403, 'Unauthorized user');
+            abort(403, 'Unauthorized user.');
         }
-
+        // dd($roles);
         // Check if the user has at least one of the specified roles
         if (!$this->userHasAnyRole(auth()->user(), $roles)) {
-            abort(403, 'Unauthorized action');
+            abort(403, 'User have no role.');
         }
 
         $permission = $request->route()->getName();

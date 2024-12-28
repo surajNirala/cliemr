@@ -97,4 +97,8 @@ function baseURL(){
     // return 'http://cliemr.corevista.in/';
 }
 
+function activeRoles(){
+    return $roles = Role::where('status', 1)->pluck('name')->implode(',');
+}
+
 

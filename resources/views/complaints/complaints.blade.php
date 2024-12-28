@@ -229,6 +229,11 @@
                                                     <i class="fa fa-times-circle"></i> Internal Server Error.
                                                 </div>`);
                     }
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }

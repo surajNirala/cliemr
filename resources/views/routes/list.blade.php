@@ -51,16 +51,21 @@
                         @foreach ($routes as $route)
                         @if($route->getName() && !in_array($route->getName(), $ignoredRoutes))
                             @if ($route->getName() && !in_array($route->getName(), $permissions))
-                                <tr>
+                                <tr id="route_name_{{ $route->getName()}}">
                                     <td>{{ implode(', ', $route->methods()) }}</td>
                                     <td>{{ $route->uri() }}</td>
                                     <td>
                                         <span id="route-name-{{ $loop->index }}">{{ $route->getName() ?: 'N/A' }}</span>
                                     </td>
                                     <td>
-                                        <a href="{{ url('routes-permissions-linked') }}/{{$route->getName()}}" class="btn btn-outline-success btn-sm" title="Permissions linked">
+                                        @if (Auth::user()->flag == 1)
+                                        <a href="javascript:void(0)" 
+                                        class="btn btn-outline-success btn-sm route-permission-link disable_class_{{$route->getName()}}" 
+                                        data-route-name="{{$route->getName()}}" 
+                                        title="Permissions linked">
                                             <i class="fas fa-link"></i>
                                         </a>
+                                        @endif
                                         <button class="btn btn-outline-primary btn-sm copy-btn" data-target="route-name-{{ $loop->index }}" title="Copy to clipboard">
                                             <i class="fas fa-copy"></i>
                                         </button>
@@ -160,6 +165,38 @@
             toastr.success('Route name copied to clipboard!');
         });
     });
+
+    $(document).ready(function () {
+        // Listen for clicks on the link
+        $('.route-permission-link').on('click', function () {
+            const routeName = $(this).data('route-name'); 
+            
+            $.ajax({
+                url: "{{ url('routes-permissions-linked') }}"+`/${routeName}`, // Backend route
+                method: 'GET', // Use appropriate HTTP method
+                beforeSend: function () {
+                    // Show a loader if needed
+                    console.log('Fetching permissions linked to:', routeName);
+                    $(".disable_class_"+routeName).addClass('disabled')
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        
+                        toastr.success(response.message);
+                        $("#route_name_"+routeName).hide()
+                        return
+                    }
+                    toastr.error(response.message);
+                    return
+                },
+                error: function (xhr, status, error) {
+                    toastr.error('Something went wrong. Please try again.');
+                },
+            });
+        });
+    });
+
 </script>
 </body>
 </html>
