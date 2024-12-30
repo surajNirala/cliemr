@@ -54,6 +54,18 @@
                 <nav class="sidebar-nav">
                     <ul class="main-menu metismenu">
                         <li><a href="{{ route('dashboard') }}"><i class="icon-home"></i><span>Dashboard</span></a></li>
+                        
+                        <li class="{{ Request::is('patients*') || Request::is('medicines*')  ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
+                                <i class="fa fa-plus-square"></i>
+                                <span>Patient Management</span>
+                            </a>
+                            <ul aria-expanded="true" class="collapse {{ Request::is('patients*') || Request::is('medicines*')  ? 'in' : '' }}">
+                                <li class="{{ Request::is('patients*') ? 'active' : '' }}">
+                                    <a href="{{ url('patients') }}">Patients</a>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="{{ Request::is('users*') || Request::is('role-permission*') || Request::is('roles*') || Request::is('permissions*') ? 'active' : '' }}">
                             <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
                                 <i class="icon-users"></i>
@@ -91,7 +103,24 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="{{ Request::is('complaints*')  ? 'active' : '' }}">
+                        <li class="{{ Request::is('complaints*') || Request::is('diagnosis*') || Request::is('notes*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
+                                <i class="fa fa-list"></i>
+                                <span>Prescription</span>
+                            </a>
+                            <ul aria-expanded="true" class="collapse {{ Request::is('complaints*') || Request::is('diagnosis*') || Request::is('notes*') ? 'in' : '' }}">
+                                <li class="{{ Request::is('complaints*') ? 'active' : '' }}">
+                                    <a href="{{ url('complaints') }}">Complaints</a>
+                                </li>
+                                <li class="{{ Request::is('diagnosis*') ? 'active' : '' }}">
+                                    <a href="{{ url('diagnosis') }}">Diagnosis</a>
+                                </li>
+                                <li class="{{ Request::is('notes*') ? 'active' : '' }}">
+                                    <a href="{{ url('notes') }}">Notes</a>
+                                </li>
+                            </ul>
+                        </li>
+                        {{-- <li class="{{ Request::is('complaints*')  ? 'active' : '' }}">
                             <a href="{{ url('complaints') }}"><i class="icon-list"></i>Complaints Remembered</a>
                         </li>
                         <li class="{{ Request::is('diagnosis*')  ? 'active' : '' }}">
@@ -99,7 +128,7 @@
                         </li>
                         <li class="{{ Request::is('notes*')  ? 'active' : '' }}">
                             <a href="{{ url('notes') }}"><i class="icon-list"></i>Notes Remembered</a>
-                        </li>
+                        </li> --}}
                         <li class="{{ Request::is('medicinelibraries*') || Request::is('medicines*')  ? 'active' : '' }}">
                             <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
                                 <i class="fa fa-medkit"></i>
@@ -119,17 +148,6 @@
                                 <li class="{{ Request::is('permissions*') ? 'active' : '' }}">
                                     <a href="{{ url('permissions') }}">Permissions</a>
                                 </li> --}}
-                            </ul>
-                        </li>
-                        <li class="{{ Request::is('patients*') || Request::is('medicines*')  ? 'active' : '' }}">
-                            <a href="javascript:void(0);" class="has-arrow" aria-expanded="true">
-                                <i class="fa fa-plus-square"></i>
-                                <span>Patient Management</span>
-                            </a>
-                            <ul aria-expanded="true" class="collapse {{ Request::is('patients*') || Request::is('medicines*')  ? 'in' : '' }}">
-                                <li class="{{ Request::is('patients*') ? 'active' : '' }}">
-                                    <a href="{{ url('patients') }}">Patients</a>
-                                </li>
                             </ul>
                         </li>
                         @if (Auth::user()->flag == 1)

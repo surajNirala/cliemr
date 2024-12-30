@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PatientController extends Controller
 {
@@ -17,10 +19,12 @@ class PatientController extends Controller
         $columns = [
             'patients.id as patient_id',
             'patients.created_by',
+            'patients.image',
             'patients.title',
             'patients.name',
             'patients.gender',
             'patients.age',
+            'patients.created_at',
             'patients.dob',
             'patients.email',
             'patients.phone',
@@ -34,7 +38,7 @@ class PatientController extends Controller
             'patients.referred_by_speciality',
             'patients.language_id',
             'patients.status',
-            'patients.created_at'
+            'patients.flag',
         ];
         // Base query
         $query = Patient::select($columns);
@@ -61,10 +65,12 @@ class PatientController extends Controller
             $columns = [
                 'patient_id',
                 'created_by',
+                'image',
                 'title',
                 'name',
                 'gender',
                 'age',
+                'created_at',
                 'dob',
                 'email',
                 'phone',
@@ -78,12 +84,15 @@ class PatientController extends Controller
                 'referred_by_speciality',
                 'language_id',
                 'status',
-                'created_at'
+                'flag'
             ];
-            $columnIndex = $request->order[0]['column']; // Column index
-            $sortColumn = $columns[$columnIndex]; // Column name
-            $sortDirection = $request->order[0]['dir']; // Sort direction (asc/desc)
-            $query->orderBy($sortColumn, $sortDirection);
+            $columnIndex = $request->order[0]['column'] ?? 0; // Default to column index 0
+            $sortColumn = $columns[$columnIndex] ?? 'created_at'; // Default to 'created_at'
+            $sortDirection = $request->order[0]['dir'] ?? 'desc'; // Default to 'desc'
+            // print_r($sortColumn);
+            // print_r($sortDirection);
+            // die;
+            $query->orderByRaw("ISNULL($sortColumn), $sortColumn $sortDirection");
         }else {
             // Default order by 'created_at' in descending order
             $query->orderBy('created_at', 'desc');
@@ -105,35 +114,77 @@ class PatientController extends Controller
     }
 
     function patients_store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
-        }
-        $customArr = [
-            'user_id' => Auth::user()->id,
-            'title' => $request->title,
-            'description' => $request->description,
-        ];
-        if(!empty($request->quick_note_id)){
-            $quickNote = QuickNote::where('id', $request->quick_note_id)->update($customArr);
-        }else{
-            $quickNote = QuickNote::create($customArr);
-        }
-        if ($quickNote) {
-            $message = 'Quick Note Created Successfully!';
-            if(!empty($request->quick_note_id)){
-                $message = 'Quick Note Updated Successfully!';
+        try {
+            // Validate the form inputs
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'name' => 'required|string|max:255',
+                'gender' => 'required|in:male,female,others',
+                'age' => 'required|numeric',
+                'phone' => 'required|numeric|digits:10',
+                'language_id' => 'nullable|exists:languages,id',
+                // 'dob' => 'required|date',
+                // 'email' => 'nullable|email',
+                // 'address' => 'nullable|string',
+                // 'city' => 'nullable|string',
+                // 'pincode' => 'nullable|numeric',
+                // 'blood_group' => 'nullable|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
             }
-            return response()->json(['success' => true, 'message' => $message]);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Failed to Quick note!']);
+            $customArr = [
+                'created_by' => Auth::user()->id,
+                'title' => $request->title,
+                'name' => $request->name,
+                'gender' => $request->gender,
+                'age' => $request->age,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'pincode' => $request->pincode,
+                'blood_group' => $request->blood_group,
+                'language_id' => $request->language_id,
+            ];
+            if(!empty($request->dob)){
+                $customArr['dob'] = date("Y-m-d", strtotime($request->dob));
+            }
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $foldername = 'custom_data';
+                $directoryPath = public_path($foldername); // Define the directory path
+                // Check if the directory exists
+                if (!file_exists($directoryPath)) {
+                    // Create the directory with 777 permissions
+                    mkdir($directoryPath, 0777, true);
+                    // Verify permissions
+                    chmod($directoryPath, 0777);
+                }
+                // Define the file path
+                $fileName = time() . '_' . $file->getClientOriginalName(); // Generate a unique file name
+                $filePath = $foldername . '/' . $fileName;
+                // Move the uploaded file to the directory
+                $file->move($directoryPath, $fileName);
+                $customArr['image'] = $filePath;
+            }
+            $patient = Patient::create($customArr);
+            $response = [
+                'success' => true,
+                'patient_id' => $patient->id,
+                'message' => 'Patient information saved successfully!',
+            ];
+            return response()->json($response);
+        } catch (\Exception $th) {
+            $response = [
+                'success' => false,
+                'message' => $th->getMessage(),
+            ];
+            return response()->json($response);
         }
     }
 
@@ -154,11 +205,81 @@ class PatientController extends Controller
 
     public function patients_edit($id)
     {
-        $quickNote = QuickNote::where('id',$id)->first();
-        if ($quickNote) {
-            return response()->json(['success' => true,'message' => 'Fetch Quick Note.', 'data' => $quickNote]);
+        $patient = Patient::where('id',$id)->first();
+        if ($patient) {
+            return response()->json(['success' => true,'message' => 'Fetch Patient details.', 'data' => $patient]);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
+    }
+
+    function patients_update(Request $request){
+        try {
+            // Validate the form inputs
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'name' => 'required|string|max:255',
+                'gender' => 'required|in:male,female,others',
+                'age' => 'required|numeric',
+                'phone' => 'required|numeric|digits:10',
+                'language_id' => 'nullable|exists:languages,id',
+                'patient_id' => 'required|numeric',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            $customArr = [
+                'created_by' => Auth::user()->id,
+                'title' => $request->title,
+                'name' => $request->name,
+                'gender' => $request->gender,
+                'age' => $request->age,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'pincode' => $request->pincode,
+                'blood_group' => $request->blood_group,
+                'language_id' => $request->language_id,
+            ];
+            if(!empty($request->dob)){
+                $customArr['dob'] = date("Y-m-d", strtotime($request->dob));
+            }
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $foldername = 'custom_data';
+                $directoryPath = public_path($foldername); // Define the directory path
+                // Check if the directory exists
+                if (!file_exists($directoryPath)) {
+                    // Create the directory with 777 permissions
+                    mkdir($directoryPath, 0777, true);
+                    // Verify permissions
+                    chmod($directoryPath, 0777);
+                }
+                // Define the file path
+                $fileName = time() . '_' . $file->getClientOriginalName(); // Generate a unique file name
+                $filePath = $foldername . '/' . $fileName;
+                // Move the uploaded file to the directory
+                $file->move($directoryPath, $fileName);
+                $customArr['image'] = $filePath;
+            }
+            $patient = Patient::where('id',$request->patient_id)->update($customArr);
+            $response = [
+                'success' => true,
+                'patient_id' => $request->patient_id,
+                'message' => 'Patient information updated successfully!',
+            ];
+            return response()->json($response);
+        } catch (\Exception $th) {
+            $response = [
+                'success' => false,
+                'message' => $th->getMessage(),
+            ];
+            return response()->json($response);
+        }
     }
 
     public function patients_delete($id)

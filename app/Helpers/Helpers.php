@@ -3,6 +3,7 @@
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Staff;
+use App\Models\Language;
 use App\Models\Medicine;
 use App\Models\Permission;
 use App\Models\Speciality;
@@ -99,6 +100,38 @@ function baseURL(){
 
 function activeRoles(){
     return $roles = Role::where('status', 1)->pluck('name')->implode(',');
+}
+
+function titleBeforName(){
+    return [
+        1=>"Mr",
+        2=>"Mrs",
+        3=>"Ms",
+        4=>"Dr",
+        5=>"Md",
+        6=>"Smt",
+        7=>"Baby",
+        8=>"Master",
+        9=>"Sri",
+        10=>"Kumari",
+    ];
+}
+
+function ageType(){
+    return [
+        "Years",
+        "Months",
+        "Weeks",
+        "Days",
+    ];
+}
+
+function bloodGroups(){
+    return ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+}
+
+function getAllActiveLanguage(){
+    return Language::latest('name')->where('status', 1)->get();
 }
 
 

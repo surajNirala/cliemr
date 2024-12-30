@@ -17,7 +17,7 @@ class PatientSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        for ($i = 0; $i < 5000; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             $customArr = [
                 // 'image' => $faker->imageUrl(200, 200, 'people'), // Fake profile image
                 'created_by' => rand(1,4),

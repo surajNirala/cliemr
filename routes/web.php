@@ -174,7 +174,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients', [PatientController::class, 'patients'])->name('patients');
     Route::get('/getpatients', [PatientController::class, 'getpatients'])->name('getpatients');
     Route::post('patients/store', [PatientController::class, 'patients_store'])->name('patients_store');
-    Route::get('patients/edit/{id}', [PatientController::class, 'medicines_edit'])->name('medicines_edit');  
+    Route::get('patients/edit/{id}', [PatientController::class, 'patients_edit'])->name('patients_edit');  
     Route::post('patients/update', [PatientController::class, 'patients_update'])->name('patients_update');
     Route::post('patients/change-status/{id}', [PatientController::class, 'patients_change_status'])->name('patients_change_status');
     Route::get('patients/delete/{id}', [PatientController::class, 'patients_delete'])->name('patients_delete');    
