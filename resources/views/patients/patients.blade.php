@@ -247,175 +247,8 @@
                 </button>
             </div>
             <div id="formErrors1" class="text-danger"></div>
-            <div class="card">                
-                <ul class="nav nav-tabs">
-                    <li class="nav-item"><a class="nav-link show active" data-toggle="tab" href="#Edit">Edit</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Bills">Bills</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Appointment">Appointment</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Paid">Paid</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Visits">Visits</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane show active" id="Edit">
-                        <form id="editForm" method="POST" action="#" enctype="multipart/form-data">
-                            <div class="modal-body">
-                                @csrf
-                                <input type="hidden" name="patient_id" id="edit_patient_id">
-                                <div class="row clearfix">
-                                    <div class="col-sm-6">
-                                        <label for="name">Name</label>
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
-                                                <select class="form-control" name="title" id="edit_title">
-                                                    {{-- <option value=""></option> --}}
-                                                    @foreach (titleBeforName() as $key => $item)
-                                                        <option value="{{$key}}">{{$item}}</option>                                            
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <input type="text" class="form-control" name="name" id="edit_name" placeholder="name">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="gender">Gender</label>
-                                        <div class="form-group">
-                                            <select class="form-control show-tick" name="gender" id="edit_gender">
-                                                <option value="">- Gender -</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="others">Others</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="age">Age/DOB</label>
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" name="age" id="edit_age" placeholder="Age">
-                                            <div class="input-group-prepend">
-                                                <select class="form-control" name="age_type" id="edit_age_type">
-                                                    @foreach (ageType() as $key => $item)
-                                                        <option value="{{$item}}">{{$item}}</option>                                            
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <input type="text" data-provide="datepicker" data-date-autoclose="true" class="form-control" name="dob" id="edit_dob" placeholder="Date of Birth">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="phone">Phone</label>
-                                        <div class="form-group">
-                                            <input type="number" class="form-control" name="phone" id="edit_phone" placeholder="Phone">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="email">Email</label>
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" name="email" id="edit_email" placeholder="Email">
-                                        </div>
-                                    </div>
-            
-                                    <div class="col-sm-6">
-                                        <label for="address">Address</label>
-                                        <div class="form-group">
-                                            <textarea name="address" id="edit_address" cols="10" rows="2" class="form-control" placeholder="Address"></textarea>                                       
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="city">City</label>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" name="city" id="edit_city" placeholder="City">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="pincode">Pincode</label>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" name="pincode" id="edit_pincode" placeholder="Area/pincode">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="blood_group">Bloog Group</label>
-                                        <select class="form-control show-tick" name="blood_group" id="edit_blood_group">
-                                            <option value="">-Blood Group-</option>
-                                            @foreach (bloodGroups() as $item)
-                                            <option value="{{$item}}">{{ucfirst($item)}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="language_id">Preffered Language</label>
-                                        <select class="form-control show-tick" name="language_id" id="edit_language_id">
-                                            <option value="">-Language-</option>
-                                            @foreach (getAllActiveLanguage() as $key => $item)
-                                            <option value="{{$item->id}}">{{ucfirst($item->name)}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="updateData()">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tab-pane" id="Bills">
-                        <h6>Profile</h6>
-                        <div class="table-responsive">
-                            <table class="table table-hover bills-list dataTable table-custom">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
-                                    </tr>
-                                </tfoot>
-                                <tbody>
-                                    <tr>
-                                        <td>Tiger Nixon</td>
-                                        <td>System Architect</td>
-                                        <td>Edinburgh</td>
-                                        <td>61</td>
-                                        <td>2011/04/25</td>
-                                        <td>$320,800</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Garrett Winters</td>
-                                        <td>Accountant</td>
-                                        <td>Tokyo</td>
-                                        <td>63</td>
-                                        <td>2011/07/25</td>
-                                        <td>$170,750</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="Appointment">
-                        <h6>Contact</h6>
-                        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS.</p>
-                    </div>
-                    <div class="tab-pane" id="Paid">
-                        <h6>Paid</h6>
-                        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS.</p>
-                    </div>
-                    <div class="tab-pane" id="Visits">
-                        <h6>Vistis</h6>
-                        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS.</p>
-                    </div>
-                </div>
+            <div class="card patient_details">                
+                
             </div>
         </div>
     </div>
@@ -568,8 +401,6 @@
             }catch (error) {
                 console.error('Error initializing DataTable:', error);
             }
-
-            $('.bills-list').DataTable()
         });
 
         $(document).ready(function (){            
@@ -694,26 +525,26 @@
                         if(patient.image){
                             image_url = `<a href="{{baseURL()}}${patient.image}"><img src="{{baseURL()}}${patient.image}" class="patients-img width30 m-r-15" alt="profile-image" width="50"></a>`
                         }else{
-                            // <span class="list-icon"><img class="patients-img" src="../assets/images/xs/avatar1.jpg" alt=""></span>
                             image_url = `<a href="{{baseURL()}}custom_data/default-image.jpg"><img src="{{baseURL()}}custom_data/default-image.jpg" class="patients-img width30 m-r-15" alt="profile-image"></a>`
                         }
                        $("#editModalLabel").html(`${image_url} ${patient.name || 'Unknown Patient'} 
                        Information`); 
-                       $('#edit_patient_id').val(patient.id) 
-                       $("#edit_title").val(patient.title)
-                        $("#edit_name").val(patient.name)
-                        $("#edit_gender").val(patient.gender)
-                        $("#edit_age").val(patient.age)
-                        $("#edit_phone").val(patient.phone)
-                        $("#edit_language_id").val(patient.language_id)
-                        if (patient.dob != "") {
-                            $("#edit_dob").val(patient.dob)
-                        }
-                        $("#edit_email").val(patient.email)
-                        $("#edit_address").val(patient.address)
-                        $("#edit_city").val(patient.city)
-                        $("#edit_pincode").val(patient.pincode)
-                        $("#edit_blood_group").val(patient.blood_group)                                            
+                    //    $('#edit_patient_id').val(patient.id) 
+                    //    $("#edit_title").val(patient.title)
+                    //     $("#edit_name").val(patient.name)
+                    //     $("#edit_gender").val(patient.gender)
+                    //     $("#edit_age").val(patient.age)
+                    //     $("#edit_phone").val(patient.phone)
+                    //     $("#edit_language_id").val(patient.language_id)
+                    //     if (patient.dob != "") {
+                    //         $("#edit_dob").val(patient.dob)
+                    //     }
+                    //     $("#edit_email").val(patient.email)
+                    //     $("#edit_address").val(patient.address)
+                    //     $("#edit_city").val(patient.city)
+                    //     $("#edit_pincode").val(patient.pincode)
+                    //     $("#edit_blood_group").val(patient.blood_group)  
+                        $('.patient_details').html(response.patient_details)                                           
                         $("#editModal").modal('show')
                     } else {
                         toastr['error'](response.message);

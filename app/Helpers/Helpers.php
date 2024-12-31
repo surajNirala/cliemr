@@ -3,6 +3,7 @@
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Staff;
+use App\Models\Service;
 use App\Models\Language;
 use App\Models\Medicine;
 use App\Models\Permission;
@@ -132,6 +133,11 @@ function bloodGroups(){
 
 function getAllActiveLanguage(){
     return Language::latest('name')->where('status', 1)->get();
+}
+
+
+function getAllActiveService(){
+    return Service::where('status', 1)->get();
 }
 
 

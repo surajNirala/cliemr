@@ -7,9 +7,11 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Database\Seeders\BillSeeder;
 use Database\Seeders\NoteSeeder;
 use Database\Seeders\AdviceSeeder;
 use Database\Seeders\PatientSeeder;
+use Database\Seeders\ServiceSeeder;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\MedicineSeeder;
 use Database\Seeders\ComplaintSeeder;
@@ -107,5 +109,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MedicineLibrarySeeder::class);
         $this->call(LanguageSeeder::class);
         $this->call(PatientSeeder::class);
+        $this->call(ServiceSeeder::class);
+        $this->call(BillSeeder::class);
     }
 }

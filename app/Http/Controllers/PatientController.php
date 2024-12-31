@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bill;
 use App\Models\Patient;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -206,8 +208,18 @@ class PatientController extends Controller
     public function patients_edit($id)
     {
         $patient = Patient::where('id',$id)->first();
+        $bills = Bill::where('patient_id', $id)->latest('created_at')->where('status',1)->get();
         if ($patient) {
-            return response()->json(['success' => true,'message' => 'Fetch Patient details.', 'data' => $patient]);
+            $data['patient'] = $patient;
+            $data['bills'] = $bills;
+            $bills_info = view('patients.patient_details', $data)->render();
+            $response = [
+                'success' => true,
+                'message' => 'Fetch Patient details.', 
+                'data' => $patient,
+                'patient_details' => $bills_info,
+            ];
+            return response()->json($response);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
     }
@@ -290,6 +302,75 @@ class PatientController extends Controller
             return response()->json(['success' => true,'message' => 'Quick Note Deleted Successfully.']);
         }
         return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
+    }
+
+    public function patients_service_details($id)
+    {
+        $service = Service::find($id);
+        if ($service) {
+            return response()->json([
+                'unit_price' => $service->unit_price, // Assuming `unit_price` column exists
+                'discount' => $service->discount,     // Assuming `discount` column exists
+                'service' => $service->service,     // Assuming `discount` column exists
+            ]);
+        }
+
+        return response()->json([
+            'error' => 'Service not found',
+        ], 404);
+    }
+
+
+    public function getBills(Request $request)
+    {
+        // Retrieve the bills with pagination, filters, etc.
+        $bills = Bill::select('created_at', 'invoice', 'service', 'unit_price', 'discount', 'due', 'gst', 'mode')
+            ->paginate(10); // Adjust the number of records per page
+
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $bills->total(),
+            'recordsFiltered' => $bills->total(),
+            'data' => $bills->items(),
+        ]);
+    }
+
+    function bill_store(Request $request){
+        try {
+            // Validate the form inputs
+            $validator = Validator::make($request->all(), [
+                'service_name' => 'required',
+                'unit_price' => 'required|numeric',
+                'discount' => 'required|numeric',
+                'patient_id' => 'required|numeric',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            $customArr = [
+                'created_by' => Auth::user()->id,
+                'service' => $request->service_name,
+                'unit_price' => $request->unit_price,
+                'discount' => $request->discount,
+                'patient_id' => $request->patient_id,
+                'invoice' => date('Ymdhis') . rand(1000, 9999),
+            ];
+            $bill = Bill::create($customArr);
+            $response = [
+                'success' => true,
+                'message' => 'Bill created successfully!!!',
+            ];
+            return response()->json($response);
+        } catch (\Exception $th) {
+            $response = [
+                'success' => false,
+                'message' => $th->getMessage(),
+            ];
+            return response()->json($response);
+        }
     }
 
 }

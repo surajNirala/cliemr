@@ -17,11 +17,11 @@ class PatientSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $customArr = [
                 // 'image' => $faker->imageUrl(200, 200, 'people'), // Fake profile image
                 'created_by' => rand(1,4),
-                'title' => $faker->title, // Mr., Ms., Dr., etc.
+                'title' => rand(1,10),
                 'name' => $faker->name,
                 'gender' => $faker->randomElement(['Male', 'Female', 'Other']),
                 'age' => $faker->numberBetween(1, 100),
