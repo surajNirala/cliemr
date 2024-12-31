@@ -6,6 +6,7 @@ use App\Models\Bill;
 use App\Models\Patient;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,9 +42,35 @@ class PatientController extends Controller
             'patients.language_id',
             'patients.status',
             'patients.flag',
+            DB::raw('COUNT(bills.id) as bill_count'),
         ];
         // Base query
-        $query = Patient::select($columns);
+        $query = Patient::select($columns)
+        ->leftJoin('bills', 'patients.id', '=', 'bills.patient_id')
+        ->groupBy([
+            'patients.id',
+            'patients.created_by',
+            'patients.image',
+            'patients.title',
+            'patients.name',
+            'patients.gender',
+            'patients.age',
+            'patients.created_at',
+            'patients.dob',
+            'patients.email',
+            'patients.phone',
+            'patients.phone2',
+            'patients.address',
+            'patients.city',
+            'patients.pincode',
+            'patients.blood_group',
+            'patients.referred_by_title',
+            'patients.referred_by_name',
+            'patients.referred_by_speciality',
+            'patients.language_id',
+            'patients.status',
+            'patients.flag',
+        ]);
         // Search functionality
         if ($request->has('search') && $request->search['value'] != '') {
             $search = $request->search['value'];
@@ -86,15 +113,15 @@ class PatientController extends Controller
                 'referred_by_speciality',
                 'language_id',
                 'status',
-                'flag'
+                'flag',
+                'bill_count'
             ];
+            
             $columnIndex = $request->order[0]['column'] ?? 0; // Default to column index 0
             $sortColumn = $columns[$columnIndex] ?? 'created_at'; // Default to 'created_at'
             $sortDirection = $request->order[0]['dir'] ?? 'desc'; // Default to 'desc'
-            // print_r($sortColumn);
-            // print_r($sortDirection);
-            // die;
-            $query->orderByRaw("ISNULL($sortColumn), $sortColumn $sortDirection");
+             // Explicitly use 'patients.created_at' for ordering
+            $query->orderBy('patients.' . $sortColumn, $sortDirection);
         }else {
             // Default order by 'created_at' in descending order
             $query->orderBy('created_at', 'desc');

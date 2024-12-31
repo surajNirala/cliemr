@@ -396,8 +396,11 @@
                     ],
                     rowCallback: function (row, data, index) {
                         // Check the condition for danger class
-                        if (data.status != 1) {
-                            $(row).addClass('table-danger');
+                        // if (data.status != 1) {
+                        //     $(row).addClass('table-danger');
+                        // }
+                        if (data.bill_count == 0) {
+                            $(row).addClass('table-warning');
                         }
                     },
                 });
