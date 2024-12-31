@@ -136,6 +136,13 @@
                                 <label for="discount">Discount</label>
                                 <input type="text" readonly class="form-control" name="discount" id="discount" value="0">
                             </div>
+                            <div class="col-sm-6">
+                                <label for="mode">Mode</label>
+                                <select class="form-control show-tick" name="mode" id="edit_mode" onchange="serviceChange()">
+                                    <option value="">-Mode-</option>
+                                    <option value="case">Case</option>
+                                </select>
+                            </div>
                             <div class="col-sm-6 mt-4">
                                 <button type="button" class="btn btn-primary" onclick="addBill()">Add Bill</button>
                             </div>
@@ -157,7 +164,7 @@
                         <th>Paid</th>
                         <th>GST</th>
                         <th>Mode</th>
-                        <th>Action</th>
+                        {{-- <th>Action</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -168,15 +175,15 @@
                         <td>{{$bill->service}}</td>
                         <td>{{$bill->unit_price}}</td>
                         <td>{{$bill->discount}}</td>
-                        <td>{{$bill->due}}</td>
+                        <td>{{$bill->due ?? 0}}</td>
                         <td>0</td>
-                        <td>0</td>
-                        <td>{{$bill->gst}}</td>
-                        <td>{{$bill->mode}}</td>
-                        <td>
+                        <td>{{$bill->unit_price}}</td>
+                        <td>{{$bill->gst ?? '-'}}</td>
+                        <td>{{strtoupper($bill->mode)}}</td>
+                        {{-- <td>
                             <button title="Edit" class="btn btn-sm btn-outline-primary"><i class="fa fa-pencil"></i></button>
                             <button title="Delete" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>       
-                        </td>
+                        </td> --}}
                     </tr>
                     @endforeach
                 </tbody>

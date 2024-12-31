@@ -343,6 +343,7 @@ class PatientController extends Controller
                 'unit_price' => 'required|numeric',
                 'discount' => 'required|numeric',
                 'patient_id' => 'required|numeric',
+                'mode' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -357,6 +358,7 @@ class PatientController extends Controller
                 'discount' => $request->discount,
                 'patient_id' => $request->patient_id,
                 'invoice' => date('Ymdhis') . rand(1000, 9999),
+                'mode' => $request->mode,
             ];
             $bill = Bill::create($customArr);
             $response = [

@@ -383,10 +383,13 @@
                                             <i class="fa fa-toggle-off"></i>
                                         </button>`;
                                 }                               
+                                // return `
+                                //     <button title="Edit" class="btn btn-sm btn-outline-primary" onclick="editRow(${row.patient_id})" ><i class="fa fa-pencil"></i></button>
+                                //     <button title="Delete" class="btn btn-sm btn-outline-danger" onclick="deleteRow(${row.patient_id})" ><i class="fa fa-trash"></i></button>
+                                //     ${statusButton}
+                                // `;
                                 return `
-                                    <button title="Edit" class="btn btn-sm btn-outline-primary" onclick="editRow(${row.patient_id})" ><i class="fa fa-pencil"></i></button>
-                                    <button title="Delete" class="btn btn-sm btn-outline-danger" onclick="deleteRow(${row.patient_id})" ><i class="fa fa-trash"></i></button>
-                                    ${statusButton}
+                                    <button title="View" class="btn btn-sm btn-outline-success" onclick="editRow(${row.patient_id})" ><i class="fa fa-eye"></i></button>
                                 `;
                             }
                         },

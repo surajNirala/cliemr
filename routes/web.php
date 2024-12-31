@@ -3,6 +3,7 @@
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
@@ -29,6 +30,13 @@ use App\Http\Controllers\UserManagment\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/change-password', function(){
+    return Hash::make('12345678');
+    User::where('email', 'admin@gmail.com')->update(['password'=>Hash::make('12345678')]);
+    return "password update";
+});
+
 
 Route::get('/routes', [RouteController::class, 'showRoutes']);
 Route::middleware('auth')->group(function () {
