@@ -5,6 +5,8 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/jquery-datatable/fixedeader/dataTables.fixedcolumns.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/jquery-datatable/fixedeader/dataTables.fixedheader.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/sweetalert/sweetalert.css') }}"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <style>
     td.details-control {
         background: url('../assets/images/details_open.png') no-repeat center center;
@@ -35,7 +37,9 @@
         transform: translate(-50%, -50%);
         text-align: center;
     }
-
+    .modal-extra-lg {
+        max-width: 90%; /* Adjust as needed */
+    }
 
 </style>
 @endsection
@@ -117,120 +121,199 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div id="formErrors" class="text-danger"></div>
-            <div class="card">                
-                <ul class="nav nav-tabs">
-                    <li class="nav-item"><a class="nav-link show active" data-toggle="tab" href="#Add">Add</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane show active" id="Add">
-                        <form id="createForm" method="POST" action="#" enctype="multipart/form-data">
-                            <div class="modal-body">
-                                @csrf
-                                <div class="row clearfix">
-                                    <div class="col-sm-6">
-                                        <label for="name">Name</label>
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
-                                                <select class="form-control" name="title" id="title">
-                                                    {{-- <option value=""></option> --}}
-                                                    @foreach (titleBeforName() as $key => $item)
-                                                        <option value="{{$key}}">{{$item}}</option>                                            
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <input type="text" class="form-control" name="name" id="name" placeholder="name">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="gender">Gender</label>
-                                        <div class="form-group">
-                                            <select class="form-control show-tick" name="gender" id="gender">
-                                                <option value="">- Gender -</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="others">Others</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="age">Age/DOB</label>
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" name="age" id="age" placeholder="Age">
-                                            <div class="input-group-prepend">
-                                                <select class="form-control" name="age_type" id="age_type">
-                                                    @foreach (ageType() as $key => $item)
-                                                        <option value="{{$item}}">{{$item}}</option>                                            
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <input type="text" data-provide="datepicker" data-date-autoclose="true" class="form-control" name="dob" id="dob" placeholder="Date of Birth">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="phone">Phone</label>
-                                        <div class="form-group">
-                                            <input type="number" class="form-control" name="phone" id="phone" placeholder="Phone">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="email">Email</label>
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" name="email" id="email" placeholder="Email">
-                                        </div>
-                                    </div>
-            
-                                    <div class="col-sm-6">
-                                        <label for="address">Address</label>
-                                        <div class="form-group">
-                                            <textarea name="address" id="addres" cols="10" rows="2" class="form-control" placeholder="Address"></textarea>                                       
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="city">City</label>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" name="city" id="city" placeholder="City">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="pincode">Pincode</label>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Area/pincode">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="blood_group">Bloog Group</label>
-                                        <select class="form-control show-tick" name="blood_group" id="blood_group">
-                                            <option value="">-Blood Group-</option>
-                                            @foreach (bloodGroups() as $item)
-                                            <option value="{{$item}}">{{ucfirst($item)}}</option>
+            <div class="modal-body">                
+                <h6>Patient Information</h6>
+                <div id="formErrors" class="text-danger"></div>
+                <form id="createForm" method="POST" action="#" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        @csrf
+                        <div class="row clearfix">
+                            <div class="col-sm-4">
+                                <label for="name">Name<span class="text-danger">*</span> </label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <select class="form-control" name="title" id="title">
+                                            {{-- <option value=""></option> --}}
+                                            @foreach (titleBeforName() as $key => $item)
+                                                <option value="{{$key}}">{{$item}}</option>                                            
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <label for="language_id">Preffered Language</label>
-                                        <select class="form-control show-tick" name="language_id" id="language_id">
-                                            <option value="">-Language-</option>
-                                            @foreach (getAllActiveLanguage() as $key => $item)
-                                            <option value="{{$item->id}}">{{ucfirst($item->name)}}</option>
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="name">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="gender">Gender<span class="text-danger">*</span> </label>
+                                <div class="form-group">
+                                    <select class="form-control show-tick" name="gender" id="gender">
+                                        <option value="">- Gender -</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="age">Age/DOB<span class="text-danger">*</span> </label>
+                                <div class="input-group mb-3">
+                                    <input type="number" class="form-control" name="age" id="age" placeholder="Age">
+                                    <div class="input-group-prepend">
+                                        <select class="form-control" name="age_type" id="age_type">
+                                            @foreach (ageType() as $key => $item)
+                                                <option value="{{$item}}">{{$item}}</option>                                            
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <label for="file">Image</label>
-                                        <div class="form-group">
-                                            <input type="file" class="form-control" name="file" id="file">
-                                        </div>
+                                    <input type="text" data-provide="datepicker" data-date-autoclose="true" class="form-control" name="dob" id="dob" placeholder="DOB">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="phone">Phone<span class="text-danger">*</span> </label>
+                                <div class="form-group">
+                                    <input type="number" class="form-control" name="phone" id="phone" placeholder="Phone">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="email">Email<span class="text-danger">*</span> </label>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-4">
+                                <label for="blood_group">Bloog Group</label>
+                                <select class="form-control show-tick" name="blood_group" id="blood_group">
+                                    <option value="">-Blood Group-</option>
+                                    @foreach (bloodGroups() as $item)
+                                    <option value="{{$item}}">{{ucfirst($item)}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="language_id">Preffered Language</label>
+                                <select class="form-control show-tick" name="language_id" id="language_id">
+                                    <option value="">-Language-</option>
+                                    @foreach (getAllActiveLanguage() as $key => $item)
+                                    <option value="{{$item->id}}">{{ucfirst($item->name)}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+    
+                            <div class="col-sm-4">
+                                <label for="address">Address</label>
+                                <div class="form-group">
+                                    <textarea name="address" id="addres" cols="10" rows="2" class="form-control" placeholder="Address"></textarea>                                       
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="city">City</label>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="city" id="city" placeholder="City">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="pincode">Pincode</label>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Area/pincode">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="file">Image</label>
+                                <div class="form-group">
+                                    <input type="file" class="form-control" name="file" id="file">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6>Bill Information <span class="text-danger">*</span> </h6>
+                    <div class="modal-body">
+                        <div class="row clearfix">
+                            <div class="col-sm-3">
+                                <label for="service">Service</label>
+                                <select class="form-control show-tick" name="service_id" id="edit_service_id" onchange="serviceChange()">
+                                    <option value="">-Service-</option>
+                                    @foreach (getAllActiveService() as $key => $item)
+                                    <option value="{{$item->id}}">{{ucfirst($item->service)}}</option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="service_name" id="service_name">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="unit_price">Unit Price</label>
+                                <input type="text" readonly class="form-control" name="unit_price" id="unit_price">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="discount">Discount</label>
+                                <input type="text" readonly class="form-control" name="discount" id="discount" value="0">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="mode">Mode</label>
+                                <select class="form-control show-tick" name="mode" id="edit_mode">
+                                    <option value="">-Mode-</option>
+                                    <option value="case">Case</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6>Appointment Information <span class="text-danger">*</span> </h6>
+                    <div class="modal-body">
+                        <div class="row clearfix">
+                            <div class="col-sm-3">
+                                <label for="doctor">Doctor</label>
+                                <select class="form-control show-tick" name="doctor_id" id="edit_doctor_id" onchange="doctorChange()">
+                                    @foreach (getAllActiveUsers() as $key => $item)
+                                    @if ($item->id == 2)
+                                    <option value="{{$item->id}}">{{ucfirst($item->name)}}</option>    
+                                    @endif
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="doctor_name" id="doctor_name">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="date_time">Date</label>
+                                <div class="input-group date" data-date-autoclose="true" data-date-format="dd/mm/yyyy" data-provide="datepicker">
+                                    <input type="text" class="form-control" readonly name="date" id="date">
+                                    <div class="input-group-append">                                            
+                                        <button class="btn btn-outline-secondary" type="button"><i class="fa fa-calendar"></i></button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="storeData()">Save</button>
+                            <div class="col-sm-3">
+                                <label for="time">Time</label>
+                                <div class="input-group date" data-date-autoclose="true">
+                                    <input type="text" class="form-control" name="time" id="time_only" placeholder="Select time">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="fa fa-clock-o"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                            <div class="col-sm-3">
+                                <label for="duration">Duration</label>
+                                <select class="form-control show-tick" name="duration" id="edit_duration">
+                                    @foreach (getAllDurations() as $key => $item)
+                                        <option value="{{$item}}" {{$key == 2 ? "selected" : ""}} >{{$item}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="status">Status</label>
+                                <select class="form-control show-tick" name="status" id="edit_status">
+                                    @foreach (getAllPatientStatus() as $key => $item)
+                                        <option value="{{$item}}">{{$item}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="storeData()">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -240,7 +323,7 @@
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" data-backdrop="static">
     <div class="modal-dialog modal-lg" role="document"> <!-- Added modal-lg for a larger popup -->
         <div class="modal-content">
-            <div class="modal-header bg-primary">
+            <div class="modal-header bg-success">
                 <h4 class="title modal-title text-white" id="editModalLabel">Edit Patient Information</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -248,6 +331,24 @@
             </div>
             <div id="formErrors1" class="text-danger"></div>
             <div class="card patient_details">                
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Bills Modal --}}
+<div class="modal fade" id="billModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-extra-lg" role="document"> <!-- Added modal-lg for a larger popup -->
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h4 class="title modal-title text-white" id="billModalLabel">Bill Patient Information</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="formErrors2" class="text-danger"></div>
+            <div class="card patient_bills">                
                 
             </div>
         </div>
@@ -366,9 +467,24 @@
                             orderable: false,
                             render: function (data, type, row) {                                
                                 let statusButton = '';
+                                let appointmentButton = `
+                                        <button 
+                                            title="Appointment" 
+                                            class="btn btn-sm btn-outline-warning" 
+                                            onclick="appointmentButton(${row.patient_id}, 1)">
+                                            <i class="fa icon-clock"></i>
+                                        </button>`;
+                                
+                                let billButton = `
+                                            <button 
+                                                title="Bills" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                onclick="billButton(${row.patient_id}, 1)">
+                                                <i class="fa icon-calculator"></i>
+                                            </button>`;
                                 if (row.status == 1) {
                                     statusButton = `
-                                        <button 
+                                        <button disabled
                                             title="Active" 
                                             class="btn btn-sm btn-outline-success" 
                                             onclick="changeStatus(${row.patient_id}, 0)">
@@ -376,20 +492,21 @@
                                         </button>`;
                                 } else {
                                     statusButton = `
-                                        <button 
+                                        <button disabled
                                             title="Inactive" 
                                             class="btn btn-sm btn-outline-danger" 
                                             onclick="changeStatus(${row.patient_id}, 1)">
                                             <i class="fa fa-toggle-off"></i>
                                         </button>`;
-                                }                               
-                                // return `
-                                //     <button title="Edit" class="btn btn-sm btn-outline-primary" onclick="editRow(${row.patient_id})" ><i class="fa fa-pencil"></i></button>
-                                //     <button title="Delete" class="btn btn-sm btn-outline-danger" onclick="deleteRow(${row.patient_id})" ><i class="fa fa-trash"></i></button>
-                                //     ${statusButton}
-                                // `;
+                                }    
+                                // <button title="View" class="btn btn-sm btn-outline-primary" onclick="showRow(${row.patient_id})" ><i class="fa fa-eye"></i></button>
+                                                           
+                                // ${appointmentButton}
                                 return `
-                                    <button title="View" class="btn btn-sm btn-outline-success" onclick="editRow(${row.patient_id})" ><i class="fa fa-eye"></i></button>
+                                    ${billButton}
+                                    <button title="Edit" class="btn btn-sm btn-outline-success" onclick="editRow(${row.patient_id})" ><i class="fa fa-pencil"></i></button>
+                                    ${statusButton}
+                                    <button disabled title="Delete" class="btn btn-sm btn-outline-danger" onclick="deleteRow(${row.patient_id})" ><i class="fa fa-trash"></i></button>
                                 `;
                             }
                         },
@@ -407,6 +524,13 @@
             }catch (error) {
                 console.error('Error initializing DataTable:', error);
             }
+
+            flatpickr("#time_only", {
+                enableTime: true,       // Enables time picker
+                noCalendar: true,       // Hides the calendar
+                dateFormat: "h:i K",    // Format for time (12-hour with AM/PM)
+                time_24hr: false,       // Ensures 12-hour format
+            });
         });
 
         $(document).ready(function (){            
@@ -416,19 +540,6 @@
                     history.pushState('', document.title, window.location.pathname); 
                 }
             });
-            // $('.nav-link').on('click', function (e) {
-            //     const fragment = $(this).attr('href'); 
-            //     if(fragment != undefined){
-            //         window.location.hash = fragment; 
-            //     }
-            // });
-            // const hash = window.location.hash; 
-            // if (hash === '#Add' || hash === '#Bills' || hash === '#Appointment' || hash === '#Paid' || hash === '#Visits' ) {
-            //     $('#createModal').modal('show'); 
-            // }
-            // if (hash) {
-            //     $(`a[href="${hash}"]`).tab('show'); 
-            // }
         })
 
         function showPatients(){
@@ -450,9 +561,9 @@
                         $('#createModal').modal('hide'); // Hide modal
                         $('#createForm')[0].reset(); // Reset the form
                         table.ajax.reload(); // Reload DataTable
-                        setTimeout(function () {
-                            editRow($response.patient_id)
-                        }, 100); // Delay in milliseconds
+                        // setTimeout(function () {
+                        //     editRow($response.patient_id)
+                        // }, 100); // Delay in milliseconds
                     } else {
                         toastr['error'](response.message); // Show error message
                     }
@@ -534,22 +645,7 @@
                             image_url = `<a href="{{baseURL()}}custom_data/default-image.jpg"><img src="{{baseURL()}}custom_data/default-image.jpg" class="patients-img width30 m-r-15" alt="profile-image"></a>`
                         }
                        $("#editModalLabel").html(`${image_url} ${patient.name || 'Unknown Patient'} 
-                       Information`); 
-                    //    $('#edit_patient_id').val(patient.id) 
-                    //    $("#edit_title").val(patient.title)
-                    //     $("#edit_name").val(patient.name)
-                    //     $("#edit_gender").val(patient.gender)
-                    //     $("#edit_age").val(patient.age)
-                    //     $("#edit_phone").val(patient.phone)
-                    //     $("#edit_language_id").val(patient.language_id)
-                    //     if (patient.dob != "") {
-                    //         $("#edit_dob").val(patient.dob)
-                    //     }
-                    //     $("#edit_email").val(patient.email)
-                    //     $("#edit_address").val(patient.address)
-                    //     $("#edit_city").val(patient.city)
-                    //     $("#edit_pincode").val(patient.pincode)
-                    //     $("#edit_blood_group").val(patient.blood_group)  
+                       Information`);   
                         $('.patient_details').html(response.patient_details)                                           
                         $("#editModal").modal('show')
                     } else {
@@ -579,6 +675,7 @@
                     if (response.success) {
                         toastr['success'](response.message); 
                         table.ajax.reload(); 
+                        $("#editModal").modal('hide')
                     } else {
                         toastr['error'](response.message); // Show error message
                     }
@@ -658,6 +755,60 @@
                 },
                 error: function (xhr, status, error) {
                     swal("Error!", 'Something went wrong. Please try again.', "error");
+                }
+            });
+        }
+
+        function serviceChange() {
+            const serviceId = document.getElementById("edit_service_id").value;
+            if (serviceId) {
+                // Make AJAX request
+                fetch( "{{url('patients/service-details')}}"+`/${serviceId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the unit_price and discount fields
+                        document.getElementById("unit_price").value = data.unit_price || 0;
+                        document.getElementById("discount").value = data.discount || 0;
+                        document.getElementById("service_name").value = data.service || "";
+                        
+                    })
+                    .catch(error => console.error("Error fetching service details:", error));
+            } else {
+                // Reset fields if no service is selected
+                document.getElementById("unit_price").value = 0;
+                document.getElementById("discount").value = 0;
+                document.getElementById("service_name").value = "";
+            }
+        }
+
+        function billButton(id) { 
+            document.getElementById('formErrors2').innerHTML = '';
+            $.ajax({
+                url: "{{ url('patients/bills') }}"+`/${id}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {                       
+                        const patient = response.data
+                        const bills = response.bills
+                        if(patient.image){
+                            image_url = `<a href="{{baseURL()}}${patient.image}"><img src="{{baseURL()}}${patient.image}" class="patients-img width30 m-r-15" alt="profile-image" width="50"></a>`
+                        }else{
+                            image_url = `<a href="{{baseURL()}}custom_data/default-image.jpg"><img src="{{baseURL()}}custom_data/default-image.jpg" class="patients-img width30 m-r-15" alt="profile-image"></a>`
+                        }
+                       $("#billModalLabel").html(`${image_url} ${patient.name || 'Unknown Patient'} 
+                       Bill Information`);   
+                        $('.patient_bills').html(response.patient_bills)                                           
+                        $("#billModal").modal('show')
+                    } else {
+                        toastr['error'](response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    let errorMessage = "Something went wrong. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    toastr['error'](errorMessage);
                 }
             });
         }

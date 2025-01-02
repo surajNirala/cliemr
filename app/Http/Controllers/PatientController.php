@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use App\Models\Bill;
 use App\Models\Patient;
 use App\Models\Service;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -144,6 +146,8 @@ class PatientController extends Controller
 
     function patients_store(Request $request){
         try {
+            // Begin a database transaction
+            DB::beginTransaction();
             // Validate the form inputs
             $validator = Validator::make($request->all(), [
                 'title' => 'required',
@@ -158,6 +162,15 @@ class PatientController extends Controller
                 // 'city' => 'nullable|string',
                 // 'pincode' => 'nullable|numeric',
                 // 'blood_group' => 'nullable|string',
+                'service_name' => 'required',
+                'unit_price' => 'required|numeric',
+                'discount' => 'required|numeric',
+                'mode' => 'required',
+                'doctor_id' => 'required|numeric',
+                'date' => 'required',
+                'time' => 'required',
+                'duration' => 'required',
+                'status' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -202,13 +215,41 @@ class PatientController extends Controller
                 $customArr['image'] = $filePath;
             }
             $patient = Patient::create($customArr);
+            $billArr = [
+                'created_by' => Auth::user()->id,
+                'service' => $request->service_name,
+                'unit_price' => $request->unit_price,
+                'discount' => $request->discount,
+                'patient_id' => $patient->id,
+                'invoice' => generateUnique(),
+                'mode' => $request->mode,
+            ];
+            $bill = Bill::create($billArr);
+            $date = $request->date;
+            $dateObject = DateTime::createFromFormat('d/m/Y', $date);
+            if ($dateObject) {
+                $formatted_date = $dateObject->format('Y-m-d'); // Outputs: 2024-12-12
+            }
+            $appointmentArr = [
+                'created_by' => Auth::user()->id,
+                'service' => $request->service_name,
+                'date' => $formatted_date,
+                'time' => date('H:i:s', strtotime($request->time)),
+                'duration' => $request->duration,
+                'patient_id' => $patient->id,
+                'status' => 1,
+            ];
+            $appointment = Appointment::create($appointmentArr);
+            // Commit the transaction
+            DB::commit();
             $response = [
                 'success' => true,
-                'patient_id' => $patient->id,
                 'message' => 'Patient information saved successfully!',
             ];
             return response()->json($response);
         } catch (\Exception $th) {
+            // Rollback the transaction in case of an error
+            DB::rollBack();
             $response = [
                 'success' => false,
                 'message' => $th->getMessage(),
@@ -217,28 +258,13 @@ class PatientController extends Controller
         }
     }
 
-    public function patients_change_status($id, Request $request)
-    {
-        $quickNote = QuickNote::find($id);
-        if ($quickNote) {
-            $quickNote->status = $request->status;
-            $quickNote->save();
-            $message = "Quick Note Status Inactive Successfully.";
-            if($request->status == 1){
-                $message = "Quick Note Status Active Successfully.";
-            }
-            return response()->json(['success' => true,'message' => $message]);
-        }
-        return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
-    }
-
     public function patients_edit($id)
     {
         $patient = Patient::where('id',$id)->first();
-        $bills = Bill::where('patient_id', $id)->latest('created_at')->where('status',1)->get();
+        // $bills = Bill::where('patient_id', $id)->latest('created_at')->where('status',1)->get();
         if ($patient) {
             $data['patient'] = $patient;
-            $data['bills'] = $bills;
+            // $data['bills'] = $bills;
             $bills_info = view('patients.patient_details', $data)->render();
             $response = [
                 'success' => true,
@@ -351,8 +377,7 @@ class PatientController extends Controller
     public function getBills(Request $request)
     {
         // Retrieve the bills with pagination, filters, etc.
-        $bills = Bill::select('created_at', 'invoice', 'service', 'unit_price', 'discount', 'due', 'gst', 'mode')
-            ->paginate(10); // Adjust the number of records per page
+        $bills = Bill::orderby('created_at', 'desc')->paginate(10); // Adjust the number of records per page
 
         return response()->json([
             'draw' => $request->get('draw'),
@@ -384,7 +409,7 @@ class PatientController extends Controller
                 'unit_price' => $request->unit_price,
                 'discount' => $request->discount,
                 'patient_id' => $request->patient_id,
-                'invoice' => date('Ymdhis') . rand(1000, 9999),
+                'invoice' => generateUnique(),
                 'mode' => $request->mode,
             ];
             $bill = Bill::create($customArr);
@@ -400,6 +425,25 @@ class PatientController extends Controller
             ];
             return response()->json($response);
         }
+    }
+
+    public function patients_bills($id)
+    {
+        $patient = Patient::where('id',$id)->first();
+        $bills = Bill::where('patient_id', $id)->latest('created_at')->where('status',1)->get();
+        if ($patient) {
+            $data['patient'] = $patient;
+            $data['bills'] = $bills;
+            $bills_info = view('patients.patient_bills', $data)->render();
+            $response = [
+                'success' => true,
+                'message' => 'Fetch Patient details.', 
+                'data' => $patient,
+                'patient_bills' => $bills_info,
+            ];
+            return response()->json($response);
+        }
+        return response()->json(['success' => false,'message' => 'Internal Server error'], 400);
     }
 
 }

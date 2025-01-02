@@ -4,7 +4,7 @@
 
 <!-- Mirrored from www.wrraptheme.com/templates/lucid/hospital/light/page-register.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 20 Oct 2024 06:11:32 GMT -->
 <head>
-<title>:: Lucid Hospital :: Sign Up</title>
+<title>:: CliEMR :: Sign Up</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">

@@ -108,8 +108,9 @@ class DatabaseSeeder extends Seeder
         $this->call(MedicineSeeder::class);
         $this->call(MedicineLibrarySeeder::class);
         $this->call(LanguageSeeder::class);
-        $this->call(PatientSeeder::class);
         $this->call(ServiceSeeder::class);
-        $this->call(BillSeeder::class);
+        // $this->call(PatientSeeder::class);
+        // $this->call(BillSeeder::class);
+        // $this->call(CreatedAppointmentSeeder::class);
     }
 }

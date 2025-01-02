@@ -10,6 +10,7 @@ use App\Models\Permission;
 use App\Models\Speciality;
 use App\Models\MedicineType;
 use App\Models\MedicineAdministration;
+
 function getStaffs($id=null){
     $staffs = Staff::get();
     return $staffs;
@@ -138,6 +139,38 @@ function getAllActiveLanguage(){
 
 function getAllActiveService(){
     return Service::where('status', 1)->get();
+}
+
+function getAllDurations(){
+    return [
+        1 => "5 mins",
+        2 => "10 mins",
+        3 => "15 mins",
+        4 => "20 mins",
+        5 => "30 mins",
+        6 => "45 mins",
+        7 => "1 hr",
+        8 => "2 hr",
+        9 => "3 hr",
+        10 => "4 hr",
+    ];
+}
+
+function getAllPatientStatus(){
+    return [
+        1 => "BOOKED",
+        2 => "ARRIVED",
+        3 => "REVIEWED",
+        4 => "CANCELLED",
+    ];
+}
+
+function getAllActiveUsers(){
+    return User::where('status',1)->where('flag','!=', 1)->get();
+}
+
+function generateUnique(){
+   return  rand(100000, 999999);
 }
 
 
